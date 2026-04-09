@@ -247,6 +247,41 @@
   }
   .corner-tl { top: 24px; left: 24px; border-width: 1px 0 0 1px; }
   .corner-br { bottom: 24px; right: 24px; border-width: 0 1px 1px 0; }
+
+  /* ── Мобильная адаптация ── */
+  @media (max-width: 768px) {
+    body { align-items: flex-start; }
+
+    .card {
+      flex-direction: column;
+      width: 100%;
+      height: auto;
+    }
+
+    .left {
+      width: 100%;
+      padding: 32px 24px 24px;
+    }
+
+    .right {
+      padding: 24px 24px 32px;
+    }
+
+    .divider { display: none; }
+
+    .headline { font-size: 32px; }
+
+    .sub { max-width: 100%; }
+
+    .bg-circle-1 {
+      width: 300px; height: 300px;
+      top: -80px; right: -60px;
+    }
+
+    .bg-circle-2 { display: none; }
+
+    .reason-item { gap: 12px; }
+  }
 </style>
 </head>
 <body>
