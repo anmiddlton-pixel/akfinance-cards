@@ -146,9 +146,18 @@
     opacity: 0.4;
   }
 
-  /* ── Мобильная адаптация ── */
-  @media (max-width: 600px) {
-    body { padding: 24px 16px; }
+  /* ── Планшет landscape (1024px) ── */
+  @media (max-width: 1024px) {
+    body { padding: 40px 28px; }
+
+    .grid {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+  }
+
+  /* ── Планшет portrait (768px) ── */
+  @media (max-width: 768px) {
+    body { padding: 32px 20px; }
 
     header {
       flex-direction: column;
@@ -157,9 +166,28 @@
       margin-bottom: 32px;
     }
 
+    h1 { font-size: 26px; }
+
+    .grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+  }
+
+  /* ── Телефон (430px и меньше) ── */
+  @media (max-width: 430px) {
+    body { padding: 24px 16px; }
+
+    h1 { font-size: 24px; }
+
     .grid {
       grid-template-columns: 1fr;
+      gap: 12px;
     }
+
+    .card-link { padding: 20px 20px 18px; }
+
+    .card-title { font-size: 14px; }
   }
 </style>
 </head>
