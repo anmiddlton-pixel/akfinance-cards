@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKFinance — Карточки</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0a;
+    min-height: 100vh;
+    font-family: 'Montserrat', sans-serif;
+    padding: 60px 40px;
+  }
+
+  header {
+    max-width: 960px;
+    margin: 0 auto 52px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    padding-bottom: 28px;
+  }
+
+  .brand {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #c9a84c;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 900;
+    color: #f5f0e8;
+    margin-top: 8px;
+  }
+
+  .count {
+    font-size: 11px;
+    color: rgba(245,240,232,0.3);
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+
+  .grid {
+    max-width: 960px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .card-link {
+    text-decoration: none;
+    display: block;
+    background: #0d0d0d;
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 4px;
+    padding: 28px 28px 24px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .card-link:hover {
+    border-color: rgba(201,168,76,0.5);
+    transform: translateY(-2px);
+  }
+
+  .card-link::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, transparent, #c9a84c, transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .card-link:hover::before { opacity: 1; }
+
+  .card-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 11px;
+    color: rgba(201,168,76,0.4);
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #f5f0e8;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+
+  .card-desc {
+    font-size: 11px;
+    color: rgba(245,240,232,0.35);
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .card-arrow {
+    position: absolute;
+    bottom: 20px;
+    right: 22px;
+    color: rgba(201,168,76,0.4);
+    font-size: 16px;
+    transition: color 0.2s, right 0.2s;
+  }
+
+  .card-link:hover .card-arrow {
+    color: #c9a84c;
+    right: 18px;
+  }
+
+  .add-card {
+    border: 1px dashed rgba(201,168,76,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 140px;
+    color: rgba(201,168,76,0.3);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: default;
+    border-radius: 4px;
+  }
+
+  .add-icon {
+    font-size: 24px;
+    opacity: 0.4;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand">AKFinance · ОАЭ</div>
+    <h1>Карточки</h1>
+  </div>
+  <div class="count" id="count"></div>
+</header>
+
+<div class="grid" id="grid">
+
+  <!-- Карточка 1 -->
+  <a class="card-link" href="bank-rejection.html" target="_blank">
+    <div class="card-num">01</div>
+    <div class="card-title">Почему банк отказал?</div>
+    <div class="card-desc">7 реальных причин отказа, о которых не скажет менеджер. Апрель 2026.</div>
+    <div class="card-arrow">→</div>
+  </a>
+
+  <!-- Сюда добавляй новые карточки -->
+  <div class="add-card">
+    <div class="add-icon">+</div>
+    новая карточка
+  </div>
+
+</div>
+
+<script>
+  const cards = document.querySelectorAll('.card-link');
+  document.getElementById('count').textContent = cards.length + ' ' + (cards.length === 1 ? 'карточка' : 'карточки');
+</script>
+
+</body>
+</html>

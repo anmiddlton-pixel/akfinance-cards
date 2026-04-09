@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Почему банки отказывают</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  .card {
+    width: 1080px;
+    height: 607px;
+    background: #0d0d0d;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+  }
+
+  /* Фоновые декоративные элементы */
+  .bg-circle {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.15;
+    pointer-events: none;
+  }
+  .bg-circle-1 { width: 500px; height: 500px; background: #c9a84c; top: -150px; right: -100px; }
+  .bg-circle-2 { width: 300px; height: 300px; background: #c9a84c; bottom: -100px; left: 200px; opacity: 0.08; }
+
+  /* Вертикальная золотая линия-разделитель */
+  .divider {
+    position: absolute;
+    left: 420px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, #c9a84c 20%, #c9a84c 80%, transparent);
+    opacity: 0.4;
+  }
+
+  /* Левая панель */
+  .left {
+    width: 420px;
+    padding: 52px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    z-index: 2;
+  }
+
+  .tag {
+    display: inline-block;
+    background: rgba(201,168,76,0.12);
+    border: 1px solid rgba(201,168,76,0.35);
+    color: #c9a84c;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 2px;
+    width: fit-content;
+    margin-bottom: 28px;
+  }
+
+  .headline {
+    font-family: 'Playfair Display', serif;
+    font-size: 44px;
+    font-weight: 900;
+    color: #f5f0e8;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+  }
+
+  .headline span {
+    color: #c9a84c;
+  }
+
+  .sub {
+    font-size: 13px;
+    color: rgba(245,240,232,0.45);
+    font-weight: 500;
+    line-height: 1.6;
+    margin-top: 20px;
+    max-width: 300px;
+  }
+
+  .cta-block {
+    margin-top: auto;
+    padding-top: 32px;
+  }
+
+  .cta-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .cta-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .cta-icon svg { width: 16px; height: 16px; }
+
+  .cta-text {
+    font-size: 12px;
+    color: #c9a84c;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  .cta-url {
+    font-size: 11px;
+    color: rgba(201,168,76,0.6);
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  /* Правая панель */
+  .right {
+    flex: 1;
+    padding: 40px 48px 40px 52px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .reasons-label {
+    font-size: 9px;
+    color: rgba(201,168,76,0.5);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 24px;
+  }
+
+  .reason-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 11px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    animation: fadeIn 0.4s ease both;
+  }
+
+  .reason-item:last-child { border-bottom: none; }
+
+  .reason-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    color: rgba(201,168,76,0.4);
+    font-weight: 700;
+    min-width: 24px;
+    padding-top: 1px;
+  }
+
+  .reason-body {}
+
+  .reason-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #f5f0e8;
+    letter-spacing: 0.2px;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: rgba(74, 180, 120, 0.12);
+    border: 1px solid rgba(74, 180, 120, 0.3);
+    color: #4ab478;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .reason-desc {
+    font-size: 11px;
+    color: rgba(245,240,232,0.4);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .reason-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #c9a84c;
+    margin-top: 5px;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateX(10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .reason-item:nth-child(1) { animation-delay: 0.05s; }
+  .reason-item:nth-child(2) { animation-delay: 0.1s; }
+  .reason-item:nth-child(3) { animation-delay: 0.15s; }
+  .reason-item:nth-child(4) { animation-delay: 0.2s; }
+  .reason-item:nth-child(5) { animation-delay: 0.25s; }
+  .reason-item:nth-child(6) { animation-delay: 0.3s; }
+  .reason-item:nth-child(7) { animation-delay: 0.35s; }
+
+  /* Угловые декоры */
+  .corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: rgba(201,168,76,0.3);
+    border-style: solid;
+  }
+  .corner-tl { top: 24px; left: 24px; border-width: 1px 0 0 1px; }
+  .corner-br { bottom: 24px; right: 24px; border-width: 0 1px 1px 0; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="bg-circle bg-circle-1"></div>
+  <div class="bg-circle bg-circle-2"></div>
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-br"></div>
+  <div class="divider"></div>
+
+  <!-- Левая панель -->
+  <div class="left">
+    <div>
+      <div class="tag">AKFINANCE · ОАЭ</div>
+      <div class="headline">Почему<br>банк<br><span>отказал?</span></div>
+      <div class="sub">7 реальных причин, о которых не скажет менеджер. Узнайте, что исправить — до следующей попытки.</div>
+    </div>
+    <div class="cta-block">
+      <div class="cta-line">
+        <div class="cta-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="cta-text">Бесплатная консультация</div>
+          <div class="cta-url">www.akfinance.ae</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Правая панель -->
+  <div class="right">
+    <div class="reasons-label">7 причин отказа</div>
+
+    <div class="reason-item">
+      <div class="reason-num">01</div>
+      <div class="reason-dot"></div>
+      <div class="reason-body">
+        <div class="reason-title">Высокорисковая деятельность <span class="badge">✓ апрель 2026</span></div>
+        <div class="reason-desc">Крипто, финансы, торговля с «серыми» рынками — автоматический красный флаг</div>
+      </div>
+    </div>
+
+    <div class="reason-item">
+      <div class="reason-num">02</div>
+      <div class="reason-dot"></div>
+      <div class="reason-body">
+        <div class="reason-title">Отсутствие субстанса <span class="badge">✓ апрель 2026</span></div>
+        <div class="reason-desc">Нет офиса, сотрудников, реальной операционной активности в ОАЭ</div>
+      </div>
+    </div>
+
+    <div class="reason-item">
+      <div class="reason-num">03</div>
+      <div class="reason-dot"></div>
+      <div class="reason-body">
+        <div class="reason-title">Несоответствие деятельности <span class="badge">✓ апрель 2026</span></div>
+        <div class="reason-desc">Лицензия на одно — операции по другому. Банк видит расхождение</div>
+      </div>
+    </div>
+
+    <div class="reason-item">
+      <div class="reason-num">04</div>
+      <div class="reason-dot"></div>
+      <div class="reason-body">
+        <div class="reason-title">Нет документов об источнике средств <span class="badge">✓ апрель 2026</span></div>
+        <div class="reason-desc">Контракты, выписки, декларации — банк обязан знать, откуда деньги</div>
+      </div>
+    </div>
+
+    <div class="reason-item">
+      <div class="reason-num">05</div>
+      <div class="reason-dot"></div>
+      <div class="reason-body">
+        <div class="reason-title">Санкционные риски <span class="badge">✓ апрель 2026</span></div>
+        <div class="reason-desc">Связи с санкционными юрисдикциями, партнёрами или транзакциями</div>
+      </div>
+    </div>
+
+    <div class="reason-item">
+      <div class="reason-num">06</div>
+      <div class="reason-dot"></div>
+      <div class="reason-body">
+        <div class="reason-title">Неполный пакет документов <span class="badge">✓ апрель 2026</span></div>
+        <div class="reason-desc">Банки требуют точный набор — одного недостающего хватит для отказа</div>
+      </div>
+    </div>
+
+    <div class="reason-item">
+      <div class="reason-num">07</div>
+      <div class="reason-dot"></div>
+      <div class="reason-body">
+        <div class="reason-title">Плохая кредитная история <span class="badge">✓ апрель 2026</span></div>
+        <div class="reason-desc">Негативный банковский бэкграунд директора или компании</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
