@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Корпоративный налог ОАЭ 9% — AKFINANCE</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f12;
+    --bg2: #111418;
+    --bg3: #181c22;
+    --teal: #3DBFB0;
+    --teal2: #2da89a;
+    --teal-dim: rgba(61,191,176,0.12);
+    --teal-glow: rgba(61,191,176,0.25);
+    --white: #ffffff;
+    --gray: #8a9ab0;
+    --gray2: #c5cdd8;
+    --border: rgba(61,191,176,0.2);
+    --gold: #f0c96a;
+    --red-dim: rgba(255,80,80,0.1);
+    --red: #ff6b6b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo-text {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--white);
+  }
+  .logo-text span { color: var(--teal); }
+  .tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--teal);
+    border: 1px solid var(--teal);
+    border-radius: 3px;
+    padding: 3px 8px;
+  }
+
+  /* HERO */
+  .hero {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 56px 24px 40px;
+  }
+  .hero-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-label::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 2px;
+    background: var(--teal);
+  }
+  h1 {
+    font-size: clamp(28px, 5vw, 46px);
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+  h1 .accent { color: var(--teal); }
+  .hero-sub {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--gray2);
+    max-width: 620px;
+    line-height: 1.65;
+    margin-bottom: 32px;
+  }
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 12px;
+    color: var(--gray);
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    flex-wrap: wrap;
+  }
+  .hero-meta-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--teal);
+    opacity: 0.6;
+  }
+
+  /* DIVIDER */
+  .divider {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+
+  /* KEY STAT BAR */
+  .stat-bar {
+    max-width: 860px;
+    margin: 0 auto 48px;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+  .stat-item {
+    background: var(--bg3);
+    padding: 24px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-item:first-child { border-radius: 8px 0 0 8px; }
+  .stat-item:last-child { border-radius: 0 8px 8px 0; }
+  .stat-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--teal);
+  }
+  .stat-num {
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--teal);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray2);
+    letter-spacing: 0.03em;
+  }
+  .stat-sub {
+    font-size: 11px;
+    color: var(--gray);
+    margin-top: 4px;
+  }
+
+  /* CONTENT */
+  .content {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  h2 .h2-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: var(--teal-dim);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  .section { margin-bottom: 52px; }
+
+  p {
+    color: var(--gray2);
+    margin-bottom: 16px;
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  p strong { color: var(--white); font-weight: 600; }
+
+  /* RATE TABLE */
+  .rate-table {
+    background: var(--bg3);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin: 24px 0;
+  }
+  .rate-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .rate-row:last-child { border-bottom: none; }
+  .rate-row.header-row {
+    background: rgba(61,191,176,0.08);
+  }
+  .rate-cell {
+    padding: 14px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray2);
+    border-right: 1px solid rgba(255,255,255,0.06);
+  }
+  .rate-cell:last-child { border-right: none; }
+  .header-row .rate-cell {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal);
+  }
+  .rate-zero { color: #4ade80; font-weight: 700; }
+  .rate-nine { color: var(--teal); font-weight: 700; font-size: 16px; }
+
+  /* CALC CARD */
+  .calc-card {
+    background: var(--bg3);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    margin: 24px 0;
+    overflow: hidden;
+  }
+  .calc-header {
+    background: var(--teal-dim);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .calc-body { padding: 24px; }
+  .calc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 14px;
+  }
+  .calc-row:last-child { border-bottom: none; }
+  .calc-label { color: var(--gray); font-weight: 500; }
+  .calc-val { color: var(--white); font-weight: 700; font-size: 16px; }
+  .calc-val.teal { color: var(--teal); }
+  .calc-val.gold { color: var(--gold); }
+  .calc-val.small { font-size: 13px; color: var(--gray2); }
+  .calc-formula {
+    background: rgba(0,0,0,0.3);
+    border-radius: 6px;
+    padding: 10px 16px;
+    margin: 12px 0;
+    font-size: 12px;
+    color: var(--teal);
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  /* WHO LIST */
+  .who-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .who-card {
+    background: var(--bg3);
+    border-radius: 10px;
+    padding: 22px;
+    border: 1px solid var(--border);
+    position: relative;
+  }
+  .who-card.green { border-color: rgba(74,222,128,0.25); }
+  .who-card.red { border-color: rgba(255,107,107,0.25); }
+  .who-card-tag {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+  .who-card.green .who-card-tag { background: rgba(74,222,128,0.15); color: #4ade80; }
+  .who-card.red .who-card-tag { background: rgba(255,107,107,0.15); color: var(--red); }
+  .who-card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--white);
+  }
+  .who-list { list-style: none; }
+  .who-list li {
+    font-size: 13px;
+    color: var(--gray2);
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+  }
+  .who-list li:last-child { border-bottom: none; }
+  .who-list li::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+  .who-card.green .who-list li::before { background: #4ade80; }
+  .who-card.red .who-list li::before { background: var(--red); }
+
+  /* SBR BOX */
+  .sbr-box {
+    background: linear-gradient(135deg, rgba(61,191,176,0.08) 0%, rgba(61,191,176,0.03) 100%);
+    border: 1px solid var(--teal);
+    border-radius: 12px;
+    padding: 32px;
+    margin: 24px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .sbr-box::before {
+    content: 'SBR';
+    position: absolute;
+    right: -10px;
+    top: -15px;
+    font-size: 100px;
+    font-weight: 900;
+    color: rgba(61,191,176,0.04);
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+  .sbr-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+  .sbr-sub {
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 20px;
+  }
+  .sbr-conditions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .sbr-cond {
+    background: rgba(0,0,0,0.25);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--gray2);
+    border-left: 3px solid var(--teal);
+  }
+  .sbr-cond strong { color: var(--white); display: block; margin-bottom: 3px; font-size: 14px; }
+
+  /* FAQ ACCORDION */
+  .faq { margin: 24px 0; }
+  .faq-item {
+    background: var(--bg3);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .faq-q {
+    padding: 18px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    gap: 12px;
+  }
+  .faq-q:hover { color: var(--teal); }
+  .faq-arrow {
+    color: var(--teal);
+    font-size: 18px;
+    transition: transform 0.3s;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .faq-item.open .faq-arrow { transform: rotate(90deg); }
+  .faq-a {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, padding 0.3s;
+    font-size: 13.5px;
+    color: var(--gray2);
+    line-height: 1.7;
+  }
+  .faq-item.open .faq-a {
+    max-height: 500px;
+    padding: 0 20px 18px;
+  }
+
+  /* CHECKLIST */
+  .checklist {
+    background: var(--bg3);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 24px;
+    margin: 24px 0;
+  }
+  .checklist-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 18px;
+  }
+  .checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 14px;
+    color: var(--gray2);
+  }
+  .checklist-item:last-child { border-bottom: none; }
+  .check-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--teal-dim);
+    border: 1px solid var(--teal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--teal);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* TIMELINE */
+  .timeline {
+    margin: 24px 0;
+    position: relative;
+    padding-left: 24px;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+  .tl-item {
+    position: relative;
+    margin-bottom: 28px;
+  }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--teal);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 0 3px var(--teal-dim);
+  }
+  .tl-date {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 4px;
+  }
+  .tl-text {
+    font-size: 14px;
+    color: var(--gray2);
+    line-height: 1.6;
+  }
+  .tl-text strong { color: var(--white); }
+
+  /* CTA */
+  .cta-block {
+    background: linear-gradient(135deg, rgba(61,191,176,0.12) 0%, rgba(61,191,176,0.04) 100%);
+    border: 1px solid var(--teal);
+    border-radius: 14px;
+    padding: 40px 36px;
+    margin: 48px 0 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-block::after {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 250px; height: 250px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(61,191,176,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 16px;
+  }
+  .cta-title {
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    line-height: 1.25;
+  }
+  .cta-sub {
+    font-size: 14px;
+    color: var(--gray2);
+    margin-bottom: 28px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .cta-btns {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    background: var(--teal);
+    color: #0d0f12;
+    border: none;
+    border-radius: 6px;
+    padding: 13px 28px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-ghost {
+    background: transparent;
+    color: var(--teal);
+    border: 1px solid var(--teal);
+    border-radius: 6px;
+    padding: 13px 28px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s;
+  }
+  .btn-ghost:hover { background: var(--teal-dim); }
+
+  /* NOTE */
+  .note {
+    background: rgba(240,201,106,0.07);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-size: 13px;
+    color: var(--gray2);
+    line-height: 1.65;
+  }
+  .note strong { color: var(--gold); }
+
+  /* FOOTER */
+  .footer {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 28px 0;
+    margin-top: 48px;
+    text-align: center;
+  }
+  .footer-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px;
+    font-size: 12px;
+    color: var(--gray);
+    line-height: 1.8;
+  }
+  .footer-inner a { color: var(--teal); text-decoration: none; }
+
+  @media (max-width: 640px) {
+    .stat-bar { grid-template-columns: 1fr; gap: 2px; }
+    .stat-item:first-child { border-radius: 8px 8px 0 0; }
+    .stat-item:last-child { border-radius: 0 0 8px 8px; }
+    .who-grid { grid-template-columns: 1fr; }
+    .sbr-conditions { grid-template-columns: 1fr; }
+    .rate-row { grid-template-columns: 1fr; }
+    .rate-cell { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .cta-block { padding: 28px 20px; }
+    h1 { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo-text">AK<span>FINANCE</span></div>
+    <div class="tag">Налоговый гид</div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-label">Образовательная статья · ОАЭ</div>
+  <h1>Корпоративный налог <span class="accent">9%</span> в ОАЭ: всё, что нужно знать предпринимателю</h1>
+  <p class="hero-sub">Как работает новый налог, кто платит, кто освобождён и сколько вы заплатите — с конкретными примерами расчёта.</p>
+  <div class="hero-meta">
+    <span>AKFINANCE Advisory</span>
+    <div class="hero-meta-dot"></div>
+    <span>Актуально с 1 июня 2023</span>
+    <div class="hero-meta-dot"></div>
+    <span>~10 минут чтения</span>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<div class="stat-bar">
+  <div class="stat-item">
+    <div class="stat-num">0%</div>
+    <div class="stat-label">До 375 000 AED</div>
+    <div class="stat-sub">Налогооблагаемая прибыль</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">9%</div>
+    <div class="stat-label">Свыше 375 000 AED</div>
+    <div class="stat-sub">Только на превышение</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">3M AED</div>
+    <div class="stat-label">Лимит для SBR</div>
+    <div class="stat-sub">Small Business Relief</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- SECTION 1: ОСНОВЫ -->
+  <div class="section">
+    <h2><span class="h2-icon">📋</span> Что такое Corporate Tax и когда он появился</h2>
+    <p>С <strong>1 июня 2023 года</strong> в ОАЭ введён федеральный корпоративный налог (Corporate Tax, CT) — впервые в истории страны. Это регулируется Федеральным декретом-законом № 47 от 2022 года.</p>
+    <p>Налог распространяется на <strong>налогооблагаемую прибыль</strong> (Taxable Income) — не на выручку. Если компания работает в убыток или на нуле, налога нет. Если прибыль не превышает 375 000 AED за финансовый год — ставка составляет 0%.</p>
+
+    <div class="rate-table">
+      <div class="rate-row header-row">
+        <div class="rate-cell">Диапазон прибыли</div>
+        <div class="rate-cell">Ставка</div>
+        <div class="rate-cell">Сумма налога</div>
+      </div>
+      <div class="rate-row">
+        <div class="rate-cell">0 — 375 000 AED</div>
+        <div class="rate-cell"><span class="rate-zero">0%</span></div>
+        <div class="rate-cell">0 AED</div>
+      </div>
+      <div class="rate-row">
+        <div class="rate-cell">Свыше 375 000 AED</div>
+        <div class="rate-cell"><span class="rate-nine">9%</span></div>
+        <div class="rate-cell">9% × (прибыль − 375 000)</div>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>⚠️ Важно:</strong> 9% — это не от всей прибыли, а только от суммы превышения порога 375 000 AED. Ниже смотрите конкретные расчёты.
+    </div>
+  </div>
+
+  <!-- SECTION 2: КТО ПЛАТИТ -->
+  <div class="section">
+    <h2><span class="h2-icon">🏢</span> Кто попадает под налог</h2>
+    <p>Corporate Tax применяется к <strong>юридическим лицам</strong>, зарегистрированным в ОАЭ — как на материке (mainland), так и в свободных зонах (free zones), а также к иностранным компаниям с постоянным присутствием в ОАЭ.</p>
+
+    <div class="who-grid">
+      <div class="who-card green">
+        <div class="who-card-tag">✓ Платят налог</div>
+        <h3>Налогоплательщики</h3>
+        <ul class="who-list">
+          <li>LLC, FZE, FZCO и другие компании ОАЭ</li>
+          <li>Компании свободных зон с доходами с материка</li>
+          <li>Иностранные компании с постоянным представительством</li>
+          <li>Физлица, ведущие бизнес без регистрации</li>
+        </ul>
+      </div>
+      <div class="who-card red">
+        <div class="who-card-tag">✕ Освобождены</div>
+        <h3>Не платят налог</h3>
+        <ul class="who-list">
+          <li>Государственные структуры ОАЭ</li>
+          <li>Добыча природных ресурсов (регулируется эмиратами)</li>
+          <li>Квалифицированные компании СЭЗ на доход, полученный исключительно внутри зоны (ставка 0%, но статус налогоплательщика сохраняется)</li>
+          <li>Некоммерческие и благотворительные организации</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Про Free Zone:</strong> компании СЭЗ могут сохранить ставку <strong>0%</strong> на «квалифицированный доход» (Qualifying Income) — то есть доход, полученный внутри зоны или от иностранных контрагентов. Но это требует соответствия требованиям «Qualifying Free Zone Person» (QFZP).
+    </div>
+  </div>
+
+  <!-- SECTION 3: ПРИМЕРЫ РАСЧЁТА -->
+  <div class="section">
+    <h2><span class="h2-icon">🧮</span> Примеры расчёта налога</h2>
+
+    <div class="calc-card">
+      <div class="calc-header">📌 Пример 1 — Прибыль 500 000 AED</div>
+      <div class="calc-body">
+        <div class="calc-formula">Налог = 9% × (500 000 − 375 000) = 9% × 125 000 = 11 250 AED</div>
+        <div class="calc-row">
+          <span class="calc-label">Налогооблагаемая прибыль</span>
+          <span class="calc-val">500 000 AED</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-label">Не облагаемая часть</span>
+          <span class="calc-val small">375 000 AED @ 0%</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-label">Облагаемая часть</span>
+          <span class="calc-val small">125 000 AED @ 9%</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-label">Сумма налога</span>
+          <span class="calc-val gold">11 250 AED</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-label">Эффективная ставка</span>
+          <span class="calc-val teal">2,25%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-card">
+      <div class="calc-header">📌 Пример 2 — Прибыль 1 000 000 AED</div>
+      <div class="calc-body">
+        <div class="calc-formula">Налог = 9% × (1 000 000 − 375 000) = 9% × 625 000 = 56 250 AED</div>
+        <div class="calc-row">
+          <span class="calc-label">Налогооблагаемая прибыль</span>
+          <span class="calc-val">1 000 000 AED</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-label">Не облагаемая часть</span>
+          <span class="calc-val small">375 000 AED @ 0%</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-label">Облагаемая часть</span>
+          <span class="calc-val small">625 000 AED @ 9%</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-label">Сумма налога</span>
+          <span class="calc-val gold">56 250 AED</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-label">Эффективная ставка</span>
+          <span class="calc-val teal">5,63%</span>
+        </div>
+      </div>
+    </div>
+
+    <p>Обратите внимание: реальная (эффективная) ставка всегда <strong>ниже 9%</strong>, потому что первые 375 000 AED прибыли не облагаются налогом вообще. Чем выше прибыль — тем ближе эффективная ставка к номинальным 9%.</p>
+  </div>
+
+  <!-- SECTION 4: SBR -->
+  <div class="section">
+    <h2><span class="h2-icon">🛡️</span> Small Business Relief (SBR)</h2>
+
+    <div class="sbr-box">
+      <div class="sbr-title">Small Business Relief — нулевая ставка для малого бизнеса</div>
+      <div class="sbr-sub">Специальный режим, при котором компания платит <strong>0% налога</strong>, даже если прибыль превышает 375 000 AED</div>
+
+      <div class="sbr-conditions">
+        <div class="sbr-cond">
+          <strong>Лимит выручки</strong>
+          Не более 3 000 000 AED в финансовом периоде
+        </div>
+        <div class="sbr-cond">
+          <strong>Кто может применить</strong>
+          Резиденты ОАЭ — юридические лица и предприниматели
+        </div>
+        <div class="sbr-cond">
+          <strong>Период действия</strong>
+          Финансовые периоды, начиная с 1 июня 2023 по 31 декабря 2026
+        </div>
+        <div class="sbr-cond">
+          <strong>Требование</strong>
+          Подача налоговой декларации обязательна, даже при SBR
+        </div>
+        <div class="sbr-cond">
+          <strong>Ограничение</strong>
+          Недоступно для компаний, входящих в международную группу (МГК) с консолидированной выручкой свыше 3,15 млрд AED
+        </div>
+      </div>
+    </div>
+
+    <p>Важно: SBR — это <strong>выбор компании</strong> (election). Нужно явно заявить о применении режима в налоговой декларации. Автоматически он не применяется.</p>
+    <p>Если выручка превышает 3 000 000 AED хотя бы в одном периоде — компания теряет право на SBR в этом периоде и применяет стандартный расчёт (0% / 9%).</p>
+  </div>
+
+  <!-- SECTION 5: КЛЮЧЕВЫЕ ДАТЫ -->
+  <div class="section">
+    <h2><span class="h2-icon">📅</span> Ключевые даты и сроки</h2>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-date">Декабрь 2022</div>
+        <div class="tl-text">Принят Федеральный декрет-закон № 47 о корпоративном налоге</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">1 июня 2023</div>
+        <div class="tl-text"><strong>Начало действия</strong> Corporate Tax для большинства компаний с финансовым годом с 1 июня</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">1 января 2024</div>
+        <div class="tl-text">Начало действия для компаний с финансовым годом с 1 января (например, LLC, зарегистрированные по calendar year)</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">9 месяцев после конца финансового года</div>
+        <div class="tl-text">Крайний срок подачи <strong>налоговой декларации</strong> и уплаты налога. Регистрация в EmaraTax обязательна.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: ЧТО НУЖНО СДЕЛАТЬ -->
+  <div class="section">
+    <h2><span class="h2-icon">✅</span> Что нужно сделать вашей компании</h2>
+
+    <div class="checklist">
+      <div class="checklist-title">Базовый чеклист для предпринимателя</div>
+      <div class="checklist-item">
+        <div class="check-icon">1</div>
+        <div>Определить <strong>дату начала первого налогового периода</strong> — зависит от даты инкорпорации и финансового года компании</div>
+      </div>
+      <div class="checklist-item">
+        <div class="check-icon">2</div>
+        <div>Зарегистрироваться в <strong>EmaraTax</strong> (портал FTA) и получить Tax Registration Number (TRN)</div>
+      </div>
+      <div class="checklist-item">
+        <div class="check-icon">3</div>
+        <div>Оценить, подходит ли компания под режим <strong>Small Business Relief</strong> (выручка до 3M AED)</div>
+      </div>
+      <div class="checklist-item">
+        <div class="check-icon">4</div>
+        <div>Проверить, является ли компания <strong>Qualifying Free Zone Person</strong> для применения ставки 0% на квалифицированные доходы</div>
+      </div>
+      <div class="checklist-item">
+        <div class="check-icon">5</div>
+        <div>Наладить <strong>финансовый учёт</strong> в соответствии со стандартами МСФО — налог считается от данных финансовой отчётности</div>
+      </div>
+      <div class="checklist-item">
+        <div class="check-icon">6</div>
+        <div>Подать декларацию и оплатить налог <strong>в течение 9 месяцев</strong> после окончания финансового года</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section">
+    <h2><span class="h2-icon">❓</span> Частые вопросы</h2>
+
+    <div class="faq">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Платит ли налог компания в СЭЗ (свободной зоне)?
+          <span class="faq-arrow">›</span>
+        </div>
+        <div class="faq-a">Компании СЭЗ могут применять ставку 0% на «квалифицированный доход» при соблюдении условий QFZP. Однако доходы от материковых клиентов в ОАЭ, как правило, считаются «неквалифицированными» и облагаются по стандартным ставкам. Граница размыта и требует анализа конкретной структуры бизнеса.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Если я — физическое лицо и фрилансер, касается ли это меня?
+          <span class="faq-arrow">›</span>
+        </div>
+        <div class="faq-a">Физические лица попадают под Corporate Tax только если ведут бизнес, требующий лицензии в ОАЭ. При этом Small Business Relief с порогом 3M AED выручки также применим. Личные инвестиционные доходы (проценты, дивиденды, аренда от личной собственности) — как правило, не облагаются.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Нужно ли регистрироваться, если компания пока не получает доход?
+          <span class="faq-arrow">›</span>
+        </div>
+        <div class="faq-a">Да. Регистрация в качестве налогоплательщика обязательна для всех юридических лиц независимо от уровня дохода. Штрафы за непостановку на учёт начинаются от 10 000 AED. Подача нулевой декларации также обязательна.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Как учитываются убытки прошлых периодов?
+          <span class="faq-arrow">›</span>
+        </div>
+        <div class="faq-a">Налоговые убытки (Tax Losses) можно переносить на будущие периоды и зачитывать до 75% от налогооблагаемой прибыли следующего года. Перенос убытков на прошлые периоды (carry back) не предусмотрен.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          Облагаются ли дивиденды и прирост капитала?
+          <span class="faq-arrow">›</span>
+        </div>
+        <div class="faq-a">Дивиденды, полученные от дочерних компаний, и прирост капитала при продаже долей участия (qualifying shareholding) освобождены от налога при соблюдении условий Participation Exemption. Это важная возможность для холдинговых структур.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-block">
+    <div class="cta-label">AKFINANCE · Консультация</div>
+    <div class="cta-title">Рассчитайте налог для вашей компании</div>
+    <div class="cta-sub">Разберём вашу структуру, определим режим налогообложения и поможем минимизировать налоговую нагрузку законными методами.</div>
+    <div class="cta-btns">
+      <a href="mailto:info@akfinance.ae" class="btn-primary">Написать на почту</a>
+      <a href="https://wa.me/78437177717" class="btn-ghost">WhatsApp</a>
+    </div>
+    <p style="margin-top:20px;font-size:12px;color:var(--gray);">info@akfinance.ae · +7 843 717 77 17 · www.akfinance.ae</p>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <strong>AKFINANCE ADVISORY SERVICES – FZCO</strong><br>
+    IFZA, Dubai · License 62462 · <a href="mailto:info@akfinance.ae">info@akfinance.ae</a> · <a href="http://www.akfinance.ae">www.akfinance.ae</a><br><br>
+    Материал носит образовательный характер и не является налоговой консультацией. Законодательство ОАЭ может изменяться. Для принятия решений рекомендуем обратиться к специалисту.
+  </div>
+</footer>
+
+<script>
+function toggleFaq(el) {
+  const item = el.parentElement;
+  item.classList.toggle('open');
+}
+</script>
+
+</body>
+</html>
