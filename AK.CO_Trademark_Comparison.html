@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AK.CO — Сравнение КП агентств</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --navy: #1F3864;
+    --navy-dark: #0f1f3d;
+    --steel: #B4C6E7;
+    --steel-light: #dce8f7;
+    --white: #f8fafd;
+    --accent: #e8a020;
+    --green: #1a7a4a;
+    --green-light: rgba(26,122,74,0.15);
+    --red: #c0392b;
+    --border: rgba(180,198,231,0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--navy-dark); color: var(--white); font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; line-height: 1.5; }
+  .page { max-width: 1200px; margin: 0 auto; padding: 48px 32px; }
+
+  /* HEADER */
+  .header { margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-end; }
+  .header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 0.04em; line-height: 1; }
+  .header h1 span { color: var(--accent); }
+  .header-meta { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--steel); text-align: right; line-height: 1.8; }
+
+  .section-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* LEGEND */
+  .legend { display: flex; gap: 24px; margin-bottom: 32px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--steel); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  /* MAIN TABLE */
+  .table-wrap { overflow-x: auto; margin-bottom: 48px; }
+  table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+
+  thead tr { background: rgba(31,56,100,0.8); }
+  thead th { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: var(--steel); text-transform: uppercase; padding: 14px 12px; text-align: center; border-bottom: 2px solid var(--accent); white-space: nowrap; }
+  thead th:first-child { text-align: left; padding-left: 20px; }
+  thead th.group-eu { border-left: 2px solid rgba(100,149,237,0.4); }
+  thead th.group-uk { border-left: 2px solid rgba(220,53,69,0.4); }
+  thead th.group-us { border-left: 2px solid rgba(255,255,255,0.2); }
+
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:hover { background: rgba(180,198,231,0.04); }
+  tbody tr.section-divider td { background: rgba(31,56,100,0.4); font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; padding: 8px 20px; }
+
+  tbody td { padding: 14px 12px; text-align: center; vertical-align: middle; }
+  tbody td:first-child { text-align: left; padding-left: 20px; }
+  tbody td.group-eu { border-left: 2px solid rgba(100,149,237,0.2); }
+  tbody td.group-uk { border-left: 2px solid rgba(220,53,69,0.2); }
+  tbody td.group-us { border-left: 2px solid rgba(255,255,255,0.1); }
+
+  /* AGENCY NAME */
+  .agency-name { font-weight: 600; color: var(--white); font-size: 13px; }
+  .agency-sub { font-size: 11px; color: var(--steel); margin-top: 2px; font-family: 'IBM Plex Mono', monospace; }
+
+  /* PRICE CELLS */
+  .price { font-family: 'IBM Plex Mono', monospace; font-weight: 500; font-size: 13px; }
+  .price-good { color: #4ade80; }
+  .price-mid { color: var(--accent); }
+  .price-bad { color: #f87171; }
+  .price-total { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.04em; }
+
+  /* STATUS TAGS */
+  .tag { display: inline-block; font-size: 10px; padding: 3px 8px; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.06em; white-space: nowrap; }
+  .tag-green { background: var(--green-light); color: #4ade80; border: 1px solid rgba(26,122,74,0.3); }
+  .tag-yellow { background: rgba(232,160,32,0.15); color: var(--accent); border: 1px solid rgba(232,160,32,0.3); }
+  .tag-red { background: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.3); }
+  .tag-gray { background: rgba(180,198,231,0.08); color: var(--steel); border: 1px solid var(--border); }
+  .tag-blue { background: rgba(100,149,237,0.1); color: #93c5fd; border: 1px solid rgba(100,149,237,0.3); }
+
+  /* STAR RATING */
+  .rating { font-size: 12px; color: var(--steel); }
+  .rating strong { color: var(--accent); }
+
+  /* NOTES */
+  .note { font-size: 11px; color: var(--steel); max-width: 200px; text-align: left; line-height: 1.4; }
+  .note.warn { color: var(--accent); }
+  .note.ok { color: #4ade80; }
+
+  /* BEST BADGE */
+  .best { display: inline-block; background: rgba(232,160,32,0.2); border: 1px solid var(--accent); color: var(--accent); font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 0.1em; padding: 2px 6px; margin-left: 6px; vertical-align: middle; }
+
+  /* SUMMARY CARDS */
+  .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px; }
+  .s-card { background: rgba(180,198,231,0.06); border: 1px solid var(--border); padding: 20px; }
+  .s-card.highlight { border-color: var(--accent); }
+  .s-card .s-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.15em; color: var(--steel); text-transform: uppercase; margin-bottom: 8px; }
+  .s-card .s-value { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--white); line-height: 1; }
+  .s-card.highlight .s-value { color: var(--accent); }
+  .s-card .s-note { margin-top: 6px; font-size: 11px; color: var(--steel); }
+
+  /* OPTIMAL BLOCK */
+  .optimal { background: rgba(26,122,74,0.1); border: 1px solid rgba(26,122,74,0.4); border-left: 3px solid #4ade80; padding: 24px; margin-bottom: 40px; }
+  .optimal h3 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.04em; color: #4ade80; margin-bottom: 12px; }
+  .optimal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .opt-item { background: rgba(26,122,74,0.1); border: 1px solid rgba(26,122,74,0.2); padding: 12px 16px; }
+  .opt-item .j { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.15em; color: var(--steel); text-transform: uppercase; margin-bottom: 4px; }
+  .opt-item .a { font-size: 13px; color: var(--white); font-weight: 500; margin-bottom: 4px; }
+  .opt-item .p { font-family: 'IBM Plex Mono', monospace; font-size: 16px; color: #4ade80; font-weight: 500; }
+  .optimal-total { display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid rgba(26,122,74,0.3); }
+  .optimal-total .label { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--steel); }
+  .optimal-total .value { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: #4ade80; }
+
+  .footer { border-top: 1px solid var(--border); padding-top: 20px; display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--steel); }
+
+  .divider { height: 1px; background: var(--border); margin: 32px 0; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--steel);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;">BRF-AK.CO-SMI2-001 · IP Protection First Wave</div>
+      <h1>СРАВНЕНИЕ <span>КП</span><br>АГЕНТСТВ</h1>
+    </div>
+    <div class="header-meta">
+      Дата: 18 мая 2026<br>
+      Подготовила: Анна Миддлтон<br>
+      Портфель: AKCO + AK.Core + AKSense<br>
+      Юрисдикции: EU · UK · US
+    </div>
+  </div>
+
+  <!-- SUMMARY CARDS -->
+  <div class="section-label">Сводка дня</div>
+  <div class="summary-grid">
+    <div class="s-card">
+      <div class="s-label">Агентств опрошено</div>
+      <div class="s-value">11</div>
+      <div class="s-note">UAE · CN · iPNOTE</div>
+    </div>
+    <div class="s-card">
+      <div class="s-label">КП получено</div>
+      <div class="s-value">7</div>
+      <div class="s-note">2 полных + 5 офферов</div>
+    </div>
+    <div class="s-card">
+      <div class="s-label">Ожидаем</div>
+      <div class="s-value">4</div>
+      <div class="s-note">Dennemeyer · M&C · Novagraaf · CN</div>
+    </div>
+    <div class="s-card highlight">
+      <div class="s-label">Лучший вариант iPNOTE</div>
+      <div class="s-value">$8,130</div>
+      <div class="s-note">EU + UK + US filing</div>
+    </div>
+  </div>
+
+  <!-- MAIN TABLE -->
+  <div class="section-label">Полная таблица предложений</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:160px">Агентство</th>
+          <th>Рейтинг</th>
+          <th>Clearance</th>
+          <th class="group-eu">🇪🇺 EU Filing</th>
+          <th class="group-eu">🇪🇺 EU Watch</th>
+          <th class="group-uk">🇬🇧 UK Filing</th>
+          <th class="group-uk">🇬🇧 UK Watch</th>
+          <th class="group-us">🇺🇸 US Filing</th>
+          <th class="group-us">🇺🇸 US Watch</th>
+          <th>Итого</th>
+          <th>Санкции</th>
+          <th>Статус</th>
+          <th>Заметки</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <!-- SECTION: ПОЛНЫЕ КП -->
+        <tr class="section-divider"><td colspan="13">Полные КП — все юрисдикции</td></tr>
+
+        <!-- BONAMARK -->
+        <tr>
+          <td>
+            <div class="agency-name">Bonamark</div>
+            <div class="agency-sub">UK · PL · SG · US</div>
+          </td>
+          <td><div class="rating">—</div></td>
+          <td><span class="price price-mid">$2,970</span></td>
+          <td class="group-eu"><span class="price price-good">$4,730</span></td>
+          <td class="group-eu"><span class="price price-bad">$4,920</span></td>
+          <td class="group-uk"><span class="price price-good">$3,210</span></td>
+          <td class="group-uk"><span class="price price-bad">$3,690</span></td>
+          <td class="group-us"><span class="price price-good">$5,200</span></td>
+          <td class="group-us"><span class="price price-bad">$720</span></td>
+          <td><span class="price price-mid price-total">$25,440</span></td>
+          <td><span class="tag tag-green">✅ OK</span></td>
+          <td><span class="tag tag-green">Получено</span></td>
+          <td><div class="note warn">Watch дорогой — уточнить отдельный провайдер</div></td>
+        </tr>
+
+        <!-- UTMPS -->
+        <tr>
+          <td>
+            <div class="agency-name">UTMPS</div>
+            <div class="agency-sub">Dubai, UAE</div>
+          </td>
+          <td><div class="rating">—</div></td>
+          <td><span class="price price-good">$1,875</span></td>
+          <td class="group-eu"><span class="price price-bad">$16,474</span></td>
+          <td class="group-eu"><span class="price price-good">$2,500*</span></td>
+          <td class="group-uk"><span class="price price-bad">$12,958</span></td>
+          <td class="group-uk"><span class="price price-good">вкл.</span></td>
+          <td class="group-us"><span class="price price-bad">$23,900</span></td>
+          <td class="group-us"><span class="price price-good">вкл.</span></td>
+          <td><span class="price price-bad price-total">$57,707</span></td>
+          <td><span class="tag tag-yellow">🟡 Уточняет</span></td>
+          <td><span class="tag tag-green">Получено</span></td>
+          <td><div class="note warn">Filing дорогой — через партнёров. Ждём санкц. заключение</div></td>
+        </tr>
+
+        <!-- DENNEMEYER -->
+        <tr>
+          <td>
+            <div class="agency-name">Dennemeyer</div>
+            <div class="agency-sub">Luxembourg</div>
+          </td>
+          <td><div class="rating">—</div></td>
+          <td><span class="tag tag-gray">⏳</span></td>
+          <td class="group-eu"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-eu"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-uk"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-uk"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-us"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-us"><span class="tag tag-gray">⏳</span></td>
+          <td><span class="tag tag-gray">⏳</span></td>
+          <td><span class="tag tag-yellow">🟡 DDQ</span></td>
+          <td><span class="tag tag-yellow">Звонок 19/05</span></td>
+          <td><div class="note warn">DDQ на заполнении · Звонок 15:00 UAE</div></td>
+        </tr>
+
+        <!-- MARKS & CLERK -->
+        <tr>
+          <td>
+            <div class="agency-name">Marks & Clerk</div>
+            <div class="agency-sub">UK · EU · US</div>
+          </td>
+          <td><div class="rating">—</div></td>
+          <td><span class="tag tag-gray">⏳</span></td>
+          <td class="group-eu"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-eu"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-uk"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-uk"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-us"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-us"><span class="tag tag-gray">⏳</span></td>
+          <td><span class="tag tag-gray">⏳</span></td>
+          <td><span class="tag tag-gray">—</span></td>
+          <td><span class="tag tag-gray">Ждём</span></td>
+          <td><div class="note">Топ UK/EU агентство</div></td>
+        </tr>
+
+        <!-- NOVAGRAAF -->
+        <tr>
+          <td>
+            <div class="agency-name">Novagraaf</div>
+            <div class="agency-sub">Netherlands · EU</div>
+          </td>
+          <td><div class="rating">—</div></td>
+          <td><span class="tag tag-gray">⏳</span></td>
+          <td class="group-eu"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-eu"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-uk"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-uk"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-us"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-us"><span class="tag tag-gray">⏳</span></td>
+          <td><span class="tag tag-gray">⏳</span></td>
+          <td><span class="tag tag-gray">—</span></td>
+          <td><span class="tag tag-gray">Ждём</span></td>
+          <td><div class="note">Лидер EUIPO filing</div></td>
+        </tr>
+
+        <!-- SECTION: IPNOTE EU -->
+        <tr class="section-divider"><td colspan="13">iPNOTE — офферы по юрисдикциям</td></tr>
+
+        <!-- IPNOTE EU ČESLOVA -->
+        <tr>
+          <td>
+            <div class="agency-name">🇱🇹 Česlova <span class="best">⭐ EU</span></div>
+            <div class="agency-sub">iPNOTE · Литва</div>
+          </td>
+          <td><div class="rating"><strong>4.94</strong> (89) · 97 задач</div></td>
+          <td><span class="tag tag-gray">—</span></td>
+          <td class="group-eu"><span class="price price-good">$2,982</span></td>
+          <td class="group-eu"><span class="tag tag-gray">—</span></td>
+          <td class="group-uk"><span class="tag tag-gray">—</span></td>
+          <td class="group-uk"><span class="tag tag-gray">—</span></td>
+          <td class="group-us"><span class="tag tag-gray">—</span></td>
+          <td class="group-us"><span class="tag tag-gray">—</span></td>
+          <td><span class="price price-good price-total">$2,982</span></td>
+          <td><span class="tag tag-green">✅ OK</span></td>
+          <td><span class="tag tag-green">Получено</span></td>
+          <td><div class="note warn">⚠️ Дать уточнение по структуре владения · 30 лет опыта · №2 EU</div></td>
+        </tr>
+
+        <!-- SECTION: IPNOTE UK -->
+        <!-- IPNOTE UK PAUL -->
+        <tr>
+          <td>
+            <div class="agency-name">🇨🇭 Paul <span class="best">⭐ UK</span></div>
+            <div class="agency-sub">iPNOTE · Швейцария</div>
+          </td>
+          <td><div class="rating"><strong>5.00</strong> (31) · 32 задачи</div></td>
+          <td><span class="tag tag-gray">—</span></td>
+          <td class="group-eu"><span class="tag tag-gray">—</span></td>
+          <td class="group-eu"><span class="tag tag-gray">—</span></td>
+          <td class="group-uk"><span class="price price-good">$1,984</span></td>
+          <td class="group-uk"><span class="tag tag-gray">—</span></td>
+          <td class="group-us"><span class="tag tag-gray">—</span></td>
+          <td class="group-us"><span class="tag tag-gray">—</span></td>
+          <td><span class="price price-good price-total">$1,984</span></td>
+          <td><span class="tag tag-green">✅ OK</span></td>
+          <td><span class="tag tag-green">Получено</span></td>
+          <td><div class="note warn">⚠️ Запросил детали заявителя · Рейтинг 5.00</div></td>
+        </tr>
+
+        <!-- SECTION: IPNOTE US -->
+        <!-- IPNOTE US #3 BEST -->
+        <tr>
+          <td>
+            <div class="agency-name">🇺🇸 США #3 <span class="best">⭐ US</span></div>
+            <div class="agency-sub">iPNOTE · United States</div>
+          </td>
+          <td><div class="rating"><strong>4.96</strong> (28) · 28 задач</div></td>
+          <td><span class="tag tag-gray">—</span></td>
+          <td class="group-eu"><span class="tag tag-gray">—</span></td>
+          <td class="group-eu"><span class="tag tag-gray">—</span></td>
+          <td class="group-uk"><span class="tag tag-gray">—</span></td>
+          <td class="group-uk"><span class="tag tag-gray">—</span></td>
+          <td class="group-us"><span class="price price-good">$3,164</span></td>
+          <td class="group-us"><span class="tag tag-gray">—</span></td>
+          <td><span class="price price-good price-total">$3,164</span></td>
+          <td><span class="tag tag-green">✅ OK</span></td>
+          <td><span class="tag tag-green">Получено</span></td>
+          <td><div class="note warn">⚠️ Дать уточнение по структуре владения</div></td>
+        </tr>
+
+        <!-- IPNOTE US BEN -->
+        <tr>
+          <td>
+            <div class="agency-name">🇺🇸 Ben</div>
+            <div class="agency-sub">iPNOTE · United States</div>
+          </td>
+          <td><div class="rating"><strong>5.00</strong> (16) · 18 задач</div></td>
+          <td><span class="tag tag-gray">—</span></td>
+          <td class="group-eu"><span class="tag tag-gray">—</span></td>
+          <td class="group-eu"><span class="tag tag-gray">—</span></td>
+          <td class="group-uk"><span class="tag tag-gray">—</span></td>
+          <td class="group-uk"><span class="tag tag-gray">—</span></td>
+          <td class="group-us"><span class="price price-mid">$3,660</span></td>
+          <td class="group-us"><span class="tag tag-gray">—</span></td>
+          <td><span class="price price-mid price-total">$3,660</span></td>
+          <td><span class="tag tag-green">✅ OK</span></td>
+          <td><span class="tag tag-green">Получено</span></td>
+          <td><div class="note warn">⚠️ Дать уточнение · Запасной вариант US</div></td>
+        </tr>
+
+        <!-- IPNOTE US KOREA - REJECTED -->
+        <tr style="opacity:0.5">
+          <td>
+            <div class="agency-name">🇰🇷 Корея</div>
+            <div class="agency-sub">iPNOTE · Korea</div>
+          </td>
+          <td><div class="rating"><strong>4.00</strong> (1) · 1 задача</div></td>
+          <td><span class="tag tag-gray">—</span></td>
+          <td class="group-eu"><span class="tag tag-gray">—</span></td>
+          <td class="group-eu"><span class="tag tag-gray">—</span></td>
+          <td class="group-uk"><span class="tag tag-gray">—</span></td>
+          <td class="group-uk"><span class="tag tag-gray">—</span></td>
+          <td class="group-us"><span class="price">$2,128</span></td>
+          <td class="group-us"><span class="tag tag-gray">—</span></td>
+          <td><span class="price price-total">$2,128</span></td>
+          <td><span class="tag tag-green">✅ OK</span></td>
+          <td><span class="tag tag-red">❌ Отклонить</span></td>
+          <td><div class="note">Минимальный опыт — 1 отзыв</div></td>
+        </tr>
+
+        <!-- SECTION: CHINA -->
+        <tr class="section-divider"><td colspan="13">Китайская волна — Shanghai AKSENSE Technology Co. Ltd.</td></tr>
+
+        <tr>
+          <td><div class="agency-name">GWBMA</div><div class="agency-sub">Shanghai · CNIPA</div></td>
+          <td>—</td>
+          <td><span class="tag tag-gray">⏳</span></td>
+          <td class="group-eu"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-eu"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-uk"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-uk"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-us"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-us"><span class="tag tag-gray">⏳</span></td>
+          <td><span class="tag tag-gray">⏳</span></td>
+          <td><span class="tag tag-green">✅ OK</span></td>
+          <td><span class="tag tag-gray">Ждём</span></td>
+          <td><div class="note">CN заявитель · без санкц. рисков</div></td>
+        </tr>
+
+        <tr>
+          <td><div class="agency-name">AFD China IP</div><div class="agency-sub">Shanghai</div></td>
+          <td>—</td>
+          <td><span class="tag tag-gray">⏳</span></td>
+          <td class="group-eu"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-eu"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-uk"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-uk"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-us"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-us"><span class="tag tag-gray">⏳</span></td>
+          <td><span class="tag tag-gray">⏳</span></td>
+          <td><span class="tag tag-green">✅ OK</span></td>
+          <td><span class="tag tag-gray">Ждём</span></td>
+          <td><div class="note">usoffice@afdip.com</div></td>
+        </tr>
+
+        <tr>
+          <td><div class="agency-name">Wanhuida</div><div class="agency-sub">Shanghai · Топ CN</div></td>
+          <td>—</td>
+          <td><span class="tag tag-gray">⏳</span></td>
+          <td class="group-eu"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-eu"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-uk"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-uk"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-us"><span class="tag tag-gray">⏳</span></td>
+          <td class="group-us"><span class="tag tag-gray">⏳</span></td>
+          <td><span class="tag tag-gray">⏳</span></td>
+          <td><span class="tag tag-green">✅ OK</span></td>
+          <td><span class="tag tag-gray">Ждём</span></td>
+          <td><div class="note">500 специалистов · Chambers Tier 1</div></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <!-- OPTIMAL COMBINATION -->
+  <div class="section-label">Оптимальная комбинация на сегодня</div>
+  <div class="optimal">
+    <h3>⭐ Лучший вариант — iPNOTE по юрисдикциям</h3>
+    <div class="optimal-grid">
+      <div class="opt-item">
+        <div class="j">🇪🇺 European Union</div>
+        <div class="a">Česlova (Литва)</div>
+        <div class="p">$2,982</div>
+      </div>
+      <div class="opt-item">
+        <div class="j">🇬🇧 United Kingdom</div>
+        <div class="a">Paul (Швейцария)</div>
+        <div class="p">$1,984</div>
+      </div>
+      <div class="opt-item">
+        <div class="j">🇺🇸 United States</div>
+        <div class="a">США #3</div>
+        <div class="p">$3,164</div>
+      </div>
+    </div>
+    <div class="optimal-total">
+      <div>
+        <div class="label">Filing (без clearance и watch) · 3 знака × 3 юрисдикции</div>
+        <div style="font-size:11px;color:var(--steel);margin-top:4px;">+ добавить Clearance Bonamark $2,970 · Watch UTMPS $2,500/год</div>
+      </div>
+      <div class="value">$8,130</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div>AK.CO Concern · IP Protection · First Wave 2026 · BRF-AK.CO-SMI2-001</div>
+    <div>Обновлено: 18 мая 2026 · Анна Миддлтон · info@aksystems.co</div>
+  </div>
+
+</div>
+</body>
+</html>
