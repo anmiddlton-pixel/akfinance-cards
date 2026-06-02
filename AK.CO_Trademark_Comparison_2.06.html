@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AK.CO — Сравнение КП агентств</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+  :root {
+    --navy-dark: #0f1f3d; --navy: #1F3864; --steel: #B4C6E7; --steel-light: #dce8f7;
+    --white: #f8fafd; --accent: #e8a020; --green: #1a7a4a; --green-light: rgba(26,122,74,0.15);
+    --border: rgba(180,198,231,0.2);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--navy-dark); color:var(--white); font-family:'IBM Plex Sans',sans-serif; font-size:13px; line-height:1.5; }
+  .page { max-width:1200px; margin:0 auto; padding:48px 32px; }
+
+  .header { margin-bottom:40px; padding-bottom:24px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:flex-end; }
+  .header h1 { font-family:'Bebas Neue',sans-serif; font-size:42px; letter-spacing:0.04em; line-height:1; }
+  .header h1 span { color:var(--accent); }
+  .header-meta { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--steel); text-align:right; line-height:1.8; }
+
+  .section-label { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.2em; color:var(--accent); text-transform:uppercase; margin-bottom:16px; display:flex; align-items:center; gap:12px; }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  .summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:40px; }
+  .s-card { background:rgba(180,198,231,0.06); border:1px solid var(--border); padding:20px; }
+  .s-card.highlight { border-color:var(--accent); }
+  .s-card .s-label { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.15em; color:var(--steel); text-transform:uppercase; margin-bottom:8px; }
+  .s-card .s-value { font-family:'Bebas Neue',sans-serif; font-size:32px; color:var(--white); line-height:1; }
+  .s-card.highlight .s-value { color:var(--accent); }
+  .s-card .s-note { margin-top:6px; font-size:11px; color:var(--steel); }
+
+  .table-wrap { overflow-x:auto; margin-bottom:48px; }
+  table { width:100%; border-collapse:collapse; min-width:900px; }
+  thead tr { background:rgba(31,56,100,0.8); }
+  thead th { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.12em; color:var(--steel); text-transform:uppercase; padding:14px 10px; text-align:center; border-bottom:2px solid var(--accent); white-space:nowrap; }
+  thead th:first-child { text-align:left; padding-left:16px; }
+  thead th.eu { border-left:2px solid rgba(100,149,237,0.4); }
+  thead th.uk { border-left:2px solid rgba(220,53,69,0.4); }
+  thead th.us { border-left:2px solid rgba(255,255,255,0.2); }
+
+  tbody tr { border-bottom:1px solid var(--border); }
+  tbody tr:hover { background:rgba(180,198,231,0.03); }
+  tbody td { padding:12px 10px; text-align:center; vertical-align:middle; }
+  tbody td:first-child { text-align:left; padding-left:16px; }
+  td.eu { border-left:2px solid rgba(100,149,237,0.2); }
+  td.uk { border-left:2px solid rgba(220,53,69,0.2); }
+  td.us { border-left:2px solid rgba(255,255,255,0.1); }
+
+  tr.section-div td { background:rgba(31,56,100,0.5); font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.15em; color:var(--accent); text-transform:uppercase; padding:8px 16px; }
+
+  .aname { font-weight:600; color:var(--white); font-size:13px; }
+  .asub { font-size:10px; color:var(--steel); margin-top:2px; font-family:'IBM Plex Mono',monospace; }
+  .contact { font-size:10px; color:var(--steel); line-height:1.5; }
+
+  .price { font-family:'IBM Plex Mono',monospace; font-weight:500; font-size:12px; }
+  .pg { color:#4ade80; }
+  .pm { color:var(--accent); }
+  .pb { color:#f87171; }
+  .ptotal { font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:0.04em; }
+
+  .tag { display:inline-block; font-size:10px; padding:2px 7px; font-family:'IBM Plex Mono',monospace; letter-spacing:0.06em; white-space:nowrap; }
+  .tg { background:var(--green-light); color:#4ade80; border:1px solid rgba(26,122,74,0.3); }
+  .ty { background:rgba(232,160,32,0.15); color:var(--accent); border:1px solid rgba(232,160,32,0.3); }
+  .tr { background:rgba(248,113,113,0.1); color:#f87171; border:1px solid rgba(248,113,113,0.3); }
+  .tgr { background:rgba(180,198,231,0.08); color:var(--steel); border:1px solid var(--border); }
+
+  .note { font-size:10px; color:var(--steel); line-height:1.4; text-align:left; max-width:180px; }
+  .nw { color:var(--accent); }
+  .no { color:#4ade80; }
+  .rating { font-size:11px; color:var(--steel); }
+  .rating strong { color:var(--accent); }
+  .best { display:inline-block; background:rgba(232,160,32,0.2); border:1px solid var(--accent); color:var(--accent); font-family:'IBM Plex Mono',monospace; font-size:8px; letter-spacing:0.1em; padding:1px 5px; margin-left:4px; vertical-align:middle; }
+
+  .optimal { background:rgba(26,122,74,0.1); border:1px solid rgba(26,122,74,0.4); border-left:3px solid #4ade80; padding:24px; margin-bottom:40px; }
+  .optimal h3 { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:0.04em; color:#4ade80; margin-bottom:12px; }
+  .opt-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+  .opt-item { background:rgba(26,122,74,0.1); border:1px solid rgba(26,122,74,0.2); padding:12px 16px; }
+  .opt-item .j { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--steel); text-transform:uppercase; margin-bottom:4px; }
+  .opt-item .a { font-size:12px; color:var(--white); font-weight:500; margin-bottom:4px; }
+  .opt-item .p { font-family:'IBM Plex Mono',monospace; font-size:16px; color:#4ade80; font-weight:500; }
+  .opt-total { display:flex; justify-content:space-between; align-items:center; padding-top:16px; border-top:1px solid rgba(26,122,74,0.3); }
+  .opt-total .label { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--steel); }
+  .opt-total .label small { display:block; margin-top:4px; font-size:10px; color:rgba(180,198,231,0.6); }
+  .opt-total .value { font-family:'Bebas Neue',sans-serif; font-size:42px; color:#4ade80; }
+
+  .note-block { background:rgba(232,160,32,0.08); border:1px solid rgba(232,160,32,0.3); border-left:3px solid var(--accent); padding:16px 20px; margin-bottom:32px; font-size:12px; color:var(--steel-light); line-height:1.7; }
+  .note-block strong { color:var(--white); }
+
+  .footer { border-top:1px solid var(--border); padding-top:20px; display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--steel); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--steel);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;">BRF-AK.CO-SMI2-001 · IP Protection First Wave</div>
+      <h1>СРАВНЕНИЕ <span>КП</span><br>АГЕНТСТВ</h1>
+    </div>
+    <div class="header-meta">
+      Дата: 21 мая 2026<br>
+      Подготовила: Анна Миддлтон<br>
+      Портфель: AKCO + AK.Core + AKSense<br>
+      Юрисдикции: EU · UK · US<br>
+      Watch service: исключён (подключить после регистрации)
+    </div>
+  </div>
+
+  <div class="section-label">Сводка</div>
+  <div class="summary-grid">
+    <div class="s-card"><div class="s-label">Агентств опрошено</div><div class="s-value">15</div><div class="s-note">UAE · CN · iPNOTE · USPTO</div></div>
+    <div class="s-card"><div class="s-label">КП получено</div><div class="s-value">10</div><div class="s-note">2 полных + 7 офферов + Witmart</div></div>
+    <div class="s-card"><div class="s-label">Ожидаем</div><div class="s-value">4</div><div class="s-note">Dennemeyer · M&C · Novagraaf · CN</div></div>
+    <div class="s-card highlight"><div class="s-label">Лучший вариант (filing + clearance)</div><div class="s-value">$10,212</div><div class="s-note">EU + UK + US · без Watch</div></div>
+  </div>
+
+  <div class="note-block">
+    ⚠️ <strong>Watch Service исключён из бюджета первой волны.</strong> Watch подключается после получения регистрации (через 4–12 мес.). Ориентир стоимости: $2,500–$9,330/год в зависимости от провайдера.
+  </div>
+
+  <div class="section-label">Полная таблица предложений</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:150px">Агентство</th>
+          <th>Рейтинг</th>
+          <th>Контакт</th>
+          <th>Clearance</th>
+          <th class="eu">🇪🇺 EU Filing</th>
+          <th class="uk">🇬🇧 UK Filing</th>
+          <th class="us">🇺🇸 US Filing</th>
+          <th>Итого</th>
+          <th>Санкции</th>
+          <th>Статус</th>
+          <th>Заметки</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr class="section-div"><td colspan="11">Полные КП — все юрисдикции</td></tr>
+
+        <!-- BONAMARK -->
+        <tr>
+          <td><div class="aname">Bonamark</div><div class="asub">UK · PL · SG · US</div></td>
+          <td><div class="rating">—</div></td>
+          <td><div class="contact">📧 sales@bonamark.com</div></td>
+          <td><span class="price pm">$2,970</span></td>
+          <td class="eu"><span class="price pg">$4,730</span></td>
+          <td class="uk"><span class="price pg">$3,210</span></td>
+          <td class="us"><span class="price pg">$5,200</span></td>
+          <td><span class="price pm ptotal">$16,110</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag tg">Получено</span></td>
+          <td><div class="note nw">Полное КП · санкции OK · уточнить Watch отдельно</div></td>
+        </tr>
+
+        <!-- UTMPS -->
+        <tr>
+          <td><div class="aname">UTMPS</div><div class="asub">Dubai, UAE</div></td>
+          <td><div class="rating">—</div></td>
+          <td><div class="contact">📧 unitedtrademark@unitedtm.com<br>dubai@unitedtm.com</div></td>
+          <td><span class="price pg">$1,875</span></td>
+          <td class="eu"><span class="price pb">$16,474</span></td>
+          <td class="uk"><span class="price pb">$12,958</span></td>
+          <td class="us"><span class="price pb">$23,900</span></td>
+          <td><span class="price pb ptotal">$55,207</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag tg">Получено</span></td>
+          <td><div class="note nw">Filing дорогой · санкции OK · проверить РФ акционера на SDN List</div></td>
+        </tr>
+
+        <!-- DENNEMEYER -->
+        <tr>
+          <td><div class="aname">Dennemeyer</div><div class="asub">Luxembourg</div></td>
+          <td><div class="rating">—</div></td>
+          <td><div class="contact">📧 nmaes@dennemeyer.com</div></td>
+          <td><span class="tag tgr">⏳</span></td>
+          <td class="eu"><span class="tag tgr">⏳</span></td>
+          <td class="uk"><span class="tag tgr">⏳</span></td>
+          <td class="us"><span class="tag tgr">⏳</span></td>
+          <td><span class="tag tgr">⏳</span></td>
+          <td><span class="tag ty">🟡 DDQ</span></td>
+          <td><span class="tag ty">Звонок 19/05</span></td>
+          <td><div class="note nw">DDQ на заполнении · Звонок 15:00 UAE</div></td>
+        </tr>
+
+        <!-- MARKS & CLERK -->
+        <tr>
+          <td><div class="aname">Marks & Clerk</div><div class="asub">UK · EU · US</div></td>
+          <td><div class="rating">—</div></td>
+          <td><div class="contact">📧 trademarks@marks-clerk.com</div></td>
+          <td><span class="tag tgr">⏳</span></td>
+          <td class="eu"><span class="tag tgr">⏳</span></td>
+          <td class="uk"><span class="tag tgr">⏳</span></td>
+          <td class="us"><span class="tag tgr">⏳</span></td>
+          <td><span class="tag tgr">⏳</span></td>
+          <td><span class="tag tgr">—</span></td>
+          <td><span class="tag tgr">Ждём</span></td>
+          <td><div class="note">Топ UK/EU агентство</div></td>
+        </tr>
+
+        <!-- NOVAGRAAF -->
+        <tr>
+          <td><div class="aname">Novagraaf</div><div class="asub">Netherlands · EU</div></td>
+          <td><div class="rating">—</div></td>
+          <td><div class="contact">🌐 novagraaf.com/en/contact-us<br><span style="color:var(--accent)">(форма — направили)</span></div></td>
+          <td><span class="tag tgr">⏳</span></td>
+          <td class="eu"><span class="tag tgr">⏳</span></td>
+          <td class="uk"><span class="tag tgr">⏳</span></td>
+          <td class="us"><span class="tag tgr">⏳</span></td>
+          <td><span class="tag tgr">⏳</span></td>
+          <td><span class="tag tgr">—</span></td>
+          <td><span class="tag tgr">Ждём</span></td>
+          <td><div class="note">Лидер EUIPO filing</div></td>
+        </tr>
+
+        <tr class="section-div"><td colspan="11">iPNOTE — офферы 🇪🇺 EU (задача на app.ipnote.pro)</td></tr>
+
+        <!-- BONAMARK iPNOTE EU -->
+        <tr>
+          <td><div class="aname">🇺🇸 Bonamark <span class="best">⭐ EU</span></div><div class="asub">iPNOTE · USA</div></td>
+          <td><div class="rating"><strong>4.92</strong> (117) · 136 задач</div></td>
+          <td><div class="contact">🌐 app.ipnote.pro<br>(задача EU)</div></td>
+          <td><span class="tag tgr">—</span></td>
+          <td class="eu"><span class="price pg">$2,262</span></td>
+          <td class="uk"><span class="tag tgr">—</span></td>
+          <td class="us"><span class="tag tgr">—</span></td>
+          <td><span class="price pg ptotal">$2,262</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag tg">Получено</span></td>
+          <td><div class="note no">Знакомое агентство · макс. опыт · 2 дня</div></td>
+        </tr>
+
+        <!-- ČESLOVA -->
+        <tr>
+          <td><div class="aname">🇱🇹 Česlova</div><div class="asub">iPNOTE · Литва</div></td>
+          <td><div class="rating"><strong>4.94</strong> (89) · 97 задач</div></td>
+          <td><div class="contact">🌐 app.ipnote.pro<br>(задача EU)</div></td>
+          <td><span class="tag tgr">—</span></td>
+          <td class="eu"><span class="price pm">$2,985</span></td>
+          <td class="uk"><span class="tag tgr">—</span></td>
+          <td class="us"><span class="tag tgr">—</span></td>
+          <td><span class="price pm ptotal">$2,985</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag tg">Получено</span></td>
+          <td><div class="note nw">30 лет · №2 EU · дать уточнение по владению</div></td>
+        </tr>
+
+        <!-- BŁAŻEJ -->
+        <tr>
+          <td><div class="aname">🇵🇱 Błażej</div><div class="asub">iPNOTE · Польша</div></td>
+          <td><div class="rating"><strong>5.00</strong> (12) · 12 задач</div></td>
+          <td><div class="contact">🌐 app.ipnote.pro<br>(задача EU)</div></td>
+          <td><span class="tag tgr">—</span></td>
+          <td class="eu"><span class="price pm">$2,512</span></td>
+          <td class="uk"><span class="tag tgr">—</span></td>
+          <td class="us"><span class="tag tgr">—</span></td>
+          <td><span class="price pm ptotal">$2,512</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag tg">Получено</span></td>
+          <td><div class="note">Баланс цены и опыта · 6 дней</div></td>
+        </tr>
+
+        <!-- ПОЛЬША #3 -->
+        <tr>
+          <td><div class="aname">🇵🇱 Польша #3</div><div class="asub">iPNOTE · Польша</div></td>
+          <td><div class="rating"><strong>5.00</strong> (7) · 6 задач</div></td>
+          <td><div class="contact">🌐 app.ipnote.pro<br>(задача EU)</div></td>
+          <td><span class="tag tgr">—</span></td>
+          <td class="eu"><span class="price pm">$2,163</span></td>
+          <td class="uk"><span class="tag tgr">—</span></td>
+          <td class="us"><span class="tag tgr">—</span></td>
+          <td><span class="price pm ptotal">$2,163</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag ty">⚠️ Уточнить</span></td>
+          <td><div class="note nw">17 дней — медленно · мало опыта</div></td>
+        </tr>
+
+        <!-- THOMAS NL -->
+        <tr>
+          <td><div class="aname">🇳🇱 Thomas</div><div class="asub">iPNOTE · Нидерланды</div></td>
+          <td><div class="rating"><strong>5.00</strong> (5) · 5 задач</div></td>
+          <td><div class="contact">🌐 app.ipnote.pro<br>(задача EU)</div></td>
+          <td><span class="tag tgr">—</span></td>
+          <td class="eu"><span class="price pg">$2,038</span></td>
+          <td class="uk"><span class="tag tgr">—</span></td>
+          <td class="us"><span class="tag tgr">—</span></td>
+          <td><span class="price pg ptotal">$2,038</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag ty">⚠️ Уточнить</span></td>
+          <td><div class="note nw">Мало опыта · 3 дня · NL близко к EUIPO</div></td>
+        </tr>
+
+        <tr class="section-div"><td colspan="11">iPNOTE — офферы 🇬🇧 UK (задача на app.ipnote.pro)</td></tr>
+
+        <!-- UK #2 BEST -->
+        <tr>
+          <td><div class="aname">🇬🇧 UK #2 <span class="best">⭐ UK</span></div><div class="asub">iPNOTE · United Kingdom</div></td>
+          <td><div class="rating"><strong>5.00</strong> (15) · 5 отзывов</div></td>
+          <td><div class="contact">🌐 app.ipnote.pro<br>(задача UK)</div></td>
+          <td><span class="tag tgr">—</span></td>
+          <td class="eu"><span class="tag tgr">—</span></td>
+          <td class="uk"><span class="price pg">$1,816</span></td>
+          <td class="us"><span class="tag tgr">—</span></td>
+          <td><span class="price pg ptotal">$1,816</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag tg">Получено</span></td>
+          <td><div class="note no">UK провайдер · 5.00 · 4 дня · лучший баланс</div></td>
+        </tr>
+
+        <!-- PAUL CH -->
+        <tr>
+          <td><div class="aname">🇨🇭 Paul</div><div class="asub">iPNOTE · Швейцария</div></td>
+          <td><div class="rating"><strong>5.00</strong> (31) · 32 задачи</div></td>
+          <td><div class="contact">🌐 app.ipnote.pro<br>(задача UK)</div></td>
+          <td><span class="tag tgr">—</span></td>
+          <td class="eu"><span class="tag tgr">—</span></td>
+          <td class="uk"><span class="price pm">$1,986</span></td>
+          <td class="us"><span class="tag tgr">—</span></td>
+          <td><span class="price pm ptotal">$1,986</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag tg">Получено</span></td>
+          <td><div class="note nw">Макс. опыт · запросил детали заявителя</div></td>
+        </tr>
+
+        <!-- ALEXANDR MD -->
+        <tr>
+          <td><div class="aname">🇲🇩 Alexandr</div><div class="asub">iPNOTE · Молдова</div></td>
+          <td><div class="rating"><strong>4.93</strong> (14) · 14 задач</div></td>
+          <td><div class="contact">🌐 app.ipnote.pro<br>(задача UK)</div></td>
+          <td><span class="tag tgr">—</span></td>
+          <td class="eu"><span class="tag tgr">—</span></td>
+          <td class="uk"><span class="price pg">$934</span></td>
+          <td class="us"><span class="tag tgr">—</span></td>
+          <td><span class="price pg ptotal">$934</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag ty">⚠️ Уточнить</span></td>
+          <td><div class="note nw">Низкая цена — запросить детализацию</div></td>
+        </tr>
+
+        <tr class="section-div"><td colspan="11">iPNOTE — офферы 🇺🇸 US (задача на app.ipnote.pro)</td></tr>
+
+        <!-- US #3 BEST -->
+        <tr>
+          <td><div class="aname">🇺🇸 США #3 <span class="best">⭐ US</span></div><div class="asub">iPNOTE · United States</div></td>
+          <td><div class="rating"><strong>4.96</strong> (28) · 28 задач</div></td>
+          <td><div class="contact">🌐 app.ipnote.pro<br>(задача US)</div></td>
+          <td><span class="tag tgr">—</span></td>
+          <td class="eu"><span class="tag tgr">—</span></td>
+          <td class="uk"><span class="tag tgr">—</span></td>
+          <td class="us"><span class="price pg">$3,164</span></td>
+          <td><span class="price pg ptotal">$3,164</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag tg">Получено</span></td>
+          <td><div class="note no">Лучший баланс US · 4.96 · 6 дней</div></td>
+        </tr>
+
+        <!-- BEN US -->
+        <tr>
+          <td><div class="aname">🇺🇸 Ben</div><div class="asub">iPNOTE · United States</div></td>
+          <td><div class="rating"><strong>5.00</strong> (16) · 18 задач</div></td>
+          <td><div class="contact">🌐 app.ipnote.pro<br>(задача US)</div></td>
+          <td><span class="tag tgr">—</span></td>
+          <td class="eu"><span class="tag tgr">—</span></td>
+          <td class="uk"><span class="tag tgr">—</span></td>
+          <td class="us"><span class="price pm">$3,660</span></td>
+          <td><span class="price pm ptotal">$3,660</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag tg">Получено</span></td>
+          <td><div class="note nw">Запасной вариант US · 7 дней</div></td>
+        </tr>
+
+        <!-- KOREA REJECTED -->
+        <tr style="opacity:0.45">
+          <td><div class="aname">🇰🇷 Корея</div><div class="asub">iPNOTE · Korea</div></td>
+          <td><div class="rating"><strong>4.00</strong> (1) · 1 задача</div></td>
+          <td><div class="contact">🌐 app.ipnote.pro<br>(задача US)</div></td>
+          <td><span class="tag tgr">—</span></td>
+          <td class="eu"><span class="tag tgr">—</span></td>
+          <td class="uk"><span class="tag tgr">—</span></td>
+          <td class="us"><span class="price">$2,128</span></td>
+          <td><span class="price ptotal">$2,128</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag tr">❌ Отклонить</span></td>
+          <td><div class="note">Минимальный опыт — 1 отзыв</div></td>
+        </tr>
+
+        <tr class="section-div"><td colspan="11">Китайская волна — Shanghai AKSENSE Technology Co. Ltd. (上海阿克盛思科技有限公司) · 6 контактов · 18–21 мая 2026</td></tr>
+
+        <tr>
+          <td><div class="aname">GWBMA</div><div class="asub">Shanghai · CNIPA</div></td>
+          <td>—</td>
+          <td><div class="contact">📧 service@gwbma.com<br><span style="color:var(--accent)">📖 Прочитано 19/05<br>Follow-up 21/05</span></div></td>
+          <td><span class="tag tgr">⏳</span></td>
+          <td class="eu"><span class="tag tgr">⏳</span></td>
+          <td class="uk"><span class="tag tgr">⏳</span></td>
+          <td class="us"><span class="tag tgr">⏳</span></td>
+          <td><span class="tag tgr">⏳</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag ty">Молчат</span></td>
+          <td><div class="note nw">Прочитали · не ответили · follow-up отправлен</div></td>
+        </tr>
+
+        <tr>
+          <td><div class="aname">AFD China IP</div><div class="asub">Shanghai</div></td>
+          <td>—</td>
+          <td><div class="contact">📧 usoffice@afdip.com<br><span style="color:var(--accent)">Follow-up 21/05</span></div></td>
+          <td><span class="tag tgr">⏳</span></td>
+          <td class="eu"><span class="tag tgr">⏳</span></td>
+          <td class="uk"><span class="tag tgr">⏳</span></td>
+          <td class="us"><span class="tag tgr">⏳</span></td>
+          <td><span class="tag tgr">⏳</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag tgr">Ждём</span></td>
+          <td><div class="note">Международная IP-практика</div></td>
+        </tr>
+
+        <tr>
+          <td><div class="aname">Wanhuida</div><div class="asub">Shanghai · Топ CN</div></td>
+          <td>—</td>
+          <td><div class="contact">📧 ranjard@wanhuida.com<br><span style="color:var(--accent)">Follow-up 21/05</span></div></td>
+          <td><span class="tag tgr">⏳</span></td>
+          <td class="eu"><span class="tag tgr">⏳</span></td>
+          <td class="uk"><span class="tag tgr">⏳</span></td>
+          <td class="us"><span class="tag tgr">⏳</span></td>
+          <td><span class="tag tgr">⏳</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag tgr">Ждём</span></td>
+          <td><div class="note">500 специалистов · Chambers Tier 1</div></td>
+        </tr>
+
+        <tr>
+          <td><div class="aname">CTMAA</div><div class="asub">Shanghai · CNIPA</div></td>
+          <td>—</td>
+          <td><div class="contact">📧 info@chinatrademarkagency.com</div></td>
+          <td><span class="tag tgr">⏳</span></td>
+          <td class="eu"><span class="tag tgr">⏳</span></td>
+          <td class="uk"><span class="tag tgr">⏳</span></td>
+          <td class="us"><span class="tag tgr">⏳</span></td>
+          <td><span class="tag tgr">⏳</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag tgr">Ждём</span></td>
+          <td><div class="note">1000+ клиентов · CN + Madrid System</div></td>
+        </tr>
+
+        <tr>
+          <td><div class="aname">Witmart <span class="best">🆓 Clearance</span></div><div class="asub">Shanghai · chloe.chow@witmart.com</div></td>
+          <td>—</td>
+          <td><div class="contact">📧 serviceteam@witmart.com<br>chloe.chow@witmart.com</div></td>
+          <td><span class="price pg">Бесплатно</span><div style="font-size:10px;color:var(--steel)">до 3 знаков</div></td>
+          <td class="eu"><span class="price pm">$15,360</span><div style="font-size:10px;color:var(--steel)">4 знака</div></td>
+          <td class="uk"><span class="price pm">$9,250</span><div style="font-size:10px;color:var(--steel)">4 знака</div></td>
+          <td class="us"><span class="price pm">$11,400</span><div style="font-size:10px;color:var(--steel)">4 знака</div></td>
+          <td><span class="price pm ptotal">$36,010</span><div style="font-size:10px;color:var(--steel)">4 знака вкл. logo</div></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag tg">Получено</span></td>
+          <td><div class="note no">Clearance бесплатно · мониторинг включён · считает 4 знака с logo</div></td>
+        </tr>
+
+        <tr>
+          <td><div class="aname">Beshining Law</div><div class="asub">Shanghai · Houston US</div></td>
+          <td>—</td>
+          <td><div class="contact">📧 info@beshininglaw.com</div></td>
+          <td><span class="tag tgr">⏳</span></td>
+          <td class="eu"><span class="tag tgr">⏳</span></td>
+          <td class="uk"><span class="tag tgr">⏳</span></td>
+          <td class="us"><span class="tag tgr">⏳</span></td>
+          <td><span class="tag tgr">⏳</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag tgr">Ждём</span></td>
+          <td><div class="note no">200+ сотрудников · офис в Хьюстоне · Chambers Band 4</div></td>
+        </tr>
+
+        <tr>
+          <td><div class="aname">USPTO IP Attaché</div><div class="asub">Shanghai · US Gov</div></td>
+          <td>—</td>
+          <td><div class="contact">📧 juli.schwartz@trade.gov<br>+86 21-6279-8558</div></td>
+          <td><span class="tag tgr">—</span></td>
+          <td class="eu"><span class="tag tgr">—</span></td>
+          <td class="uk"><span class="tag tgr">—</span></td>
+          <td class="us"><span class="tag tgr">—</span></td>
+          <td><span class="tag tgr">—</span></td>
+          <td><span class="tag tg">✅ OK</span></td>
+          <td><span class="tag tgr">Ждём</span></td>
+          <td><div class="note no">Запрос рекомендации · официальный представитель USPTO в Шанхае</div></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <!-- OPTIMAL -->
+  <div class="section-label">Оптимальная комбинация на сегодня</div>
+  <div class="optimal">
+    <h3>⭐ Лучший вариант — iPNOTE по юрисдикциям + Clearance Bonamark</h3>
+    <div class="opt-grid">
+      <div class="opt-item">
+        <div class="j">🔍 Clearance</div>
+        <div class="a">Bonamark</div>
+        <div class="p">$2,970</div>
+      </div>
+      <div class="opt-item">
+        <div class="j">🇪🇺 EU Filing</div>
+        <div class="a">Bonamark (iPNOTE)</div>
+        <div class="p">$2,262</div>
+      </div>
+      <div class="opt-item">
+        <div class="j">🇬🇧 UK Filing</div>
+        <div class="a">UK #2 (iPNOTE)</div>
+        <div class="p">$1,816</div>
+      </div>
+      <div class="opt-item">
+        <div class="j">🇺🇸 US Filing</div>
+        <div class="a">США #3 (iPNOTE)</div>
+        <div class="p">$3,164</div>
+      </div>
+    </div>
+    <div class="opt-total">
+      <div>
+        <div class="label">Clearance + Filing · 3 знака × 3 юрисдикции · Watch исключён</div>
+        <div class="label"><small>Watch подключить после регистрации (~$2,500/год UTMPS или ~$9,330/год Bonamark)</small></div>
+      </div>
+      <div class="value">$10,212</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>AK.CO Concern · IP Protection · First Wave 2026 · BRF-AK.CO-SMI2-001</div>
+    <div>Обновлено: 21 мая 2026 · Анна Миддлтон · info@aksystems.co</div>
+  </div>
+
+</div>
+</body>
+</html>
