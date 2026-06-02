@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AK.CO · Marketing KB · Table View</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700&family=Inter:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #07111a;
+  --bg2:     #0c1a25;
+  --surface: #101f2d;
+  --s2:      #142435;
+  --border:  rgba(74,158,202,0.13);
+  --text:    #ddeaf3;
+  --muted:   #6a8fa8;
+  --dim:     #334f65;
+
+  --blue:   #4a9eca; --blue-bg:   rgba(74,158,202,0.10);
+  --gold:   #c8a96e; --gold-bg:   rgba(200,169,110,0.10);
+  --green:  #64c882; --green-bg:  rgba(100,200,130,0.10);
+  --purple: #b478dc; --purple-bg: rgba(180,120,220,0.10);
+  --orange: #ff9650; --orange-bg: rgba(255,150,80,0.10);
+  --teal:   #50d8c8; --teal-bg:   rgba(80,210,200,0.10);
+  --pink:   #ff8caa; --pink-bg:   rgba(255,140,170,0.10);
+  --red:    #ff6b6b; --red-bg:    rgba(255,107,107,0.10);
+  --lime:   #b4dc50; --lime-bg:   rgba(180,220,80,0.10);
+  --sky:    #78beff; --sky-bg:    rgba(120,190,255,0.10);
+  --amber:  #ffc83c; --amber-bg:  rgba(255,200,60,0.10);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+
+/* grid bg */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image:
+    linear-gradient(rgba(74,158,202,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74,158,202,0.035) 1px, transparent 1px);
+  background-size: 36px 36px;
+  pointer-events:none; z-index:0;
+}
+
+.page { position:relative; z-index:1; max-width:1280px; margin:0 auto; padding:40px 28px; }
+
+/* ── HEADER ── */
+header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom: 40px; gap:20px;
+}
+.h-left { display:flex; align-items:center; gap:16px; }
+.logo {
+  width:46px; height:46px;
+  background: linear-gradient(135deg,#4a9eca,#254154);
+  border-radius:12px; display:flex; align-items:center; justify-content:center;
+  font-family:'Unbounded',sans-serif; font-size:13px; font-weight:700; color:#fff;
+  flex-shrink:0;
+}
+.h-title { font-family:'Unbounded',sans-serif; font-size:20px; font-weight:700; letter-spacing:-.4px; }
+.h-title span { color: var(--blue); }
+.h-sub { font-size:11px; color:var(--muted); letter-spacing:.08em; margin-top:3px; }
+.h-badge {
+  display:flex; align-items:center; gap:6px;
+  background: rgba(74,158,202,.08); border:1px solid rgba(74,158,202,.22);
+  border-radius:8px; padding:7px 14px;
+  font-size:11px; color:var(--blue); font-weight:500;
+}
+.h-badge::before {
+  content:''; width:6px; height:6px; border-radius:50%;
+  background:var(--blue); animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ── LEGEND ── */
+.legend {
+  display:flex; gap:12px; flex-wrap:wrap;
+  padding:12px 18px;
+  background: rgba(255,255,255,.02);
+  border:1px solid var(--border); border-radius:10px;
+  margin-bottom:32px;
+}
+.legend-label { font-size:9px; letter-spacing:.15em; text-transform:uppercase; color:var(--dim); align-self:center; margin-right:4px; }
+.ltag {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:10px; padding:3px 9px; border-radius:5px; font-weight:500;
+}
+
+/* ── SECTION HEADER ROW ── */
+.sec-wrap { margin-bottom:6px; }
+
+.sec-header {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 16px;
+  border-radius:10px 10px 0 0;
+  border-left:3px solid;
+  cursor:pointer;
+  transition: filter .15s;
+}
+.sec-header:hover { filter:brightness(1.1); }
+
+.sec-icon { font-size:18px; flex-shrink:0; }
+.sec-num  { font-family:'Unbounded',sans-serif; font-size:9px; font-weight:600; letter-spacing:.15em; opacity:.7; }
+.sec-name { font-family:'Unbounded',sans-serif; font-size:12px; font-weight:700; flex:1; }
+.sec-count {
+  font-size:10px; padding:2px 8px; border-radius:4px;
+  background:rgba(0,0,0,.2); color:inherit; opacity:.7;
+}
+.sec-arrow { font-size:11px; opacity:.6; transition: transform .2s; }
+.sec-header.open .sec-arrow { transform: rotate(90deg); }
+
+/* ── TABLE ── */
+.tbl-wrap {
+  border-radius:0 0 10px 10px;
+  overflow:hidden;
+  border:1px solid;
+  border-top:none;
+  max-height:0;
+  overflow:hidden;
+  transition: max-height .35s ease;
+}
+.tbl-wrap.open { max-height:600px; overflow:visible; }
+
+table {
+  width:100%; border-collapse:collapse;
+  font-size:12px;
+}
+
+thead th {
+  padding:8px 14px;
+  font-size:8.5px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase;
+  color:var(--dim); text-align:left;
+  background:rgba(0,0,0,.15);
+  border-bottom:1px solid;
+}
+
+tbody tr {
+  border-bottom:1px solid;
+  transition:background .15s;
+}
+tbody tr:last-child { border-bottom:none; }
+tbody tr:hover { background:rgba(255,255,255,.025); }
+
+td { padding:9px 14px; vertical-align:middle; }
+
+.td-doc { color:var(--text); font-size:12px; }
+.td-type .tag {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:9px; padding:2px 7px; border-radius:4px;
+  font-weight:500; letter-spacing:.04em; white-space:nowrap;
+}
+.td-desc { color:var(--muted); font-size:11px; font-style:italic; }
+.td-how {
+  font-size:10px; color:var(--dim);
+  display:inline-flex; align-items:center; gap:4px;
+}
+.dot { width:4px; height:4px; border-radius:50%; display:inline-block; flex-shrink:0; }
+
+/* colour helpers */
+.c-blue   { --c:var(--blue);   --cbg:var(--blue-bg);   border-color:rgba(74,158,202,.3); }
+.c-gold   { --c:var(--gold);   --cbg:var(--gold-bg);   border-color:rgba(200,169,110,.3); }
+.c-green  { --c:var(--green);  --cbg:var(--green-bg);  border-color:rgba(100,200,130,.3); }
+.c-purple { --c:var(--purple); --cbg:var(--purple-bg); border-color:rgba(180,120,220,.3); }
+.c-orange { --c:var(--orange); --cbg:var(--orange-bg); border-color:rgba(255,150,80,.3); }
+.c-teal   { --c:var(--teal);   --cbg:var(--teal-bg);   border-color:rgba(80,210,200,.3); }
+.c-pink   { --c:var(--pink);   --cbg:var(--pink-bg);   border-color:rgba(255,140,170,.3); }
+.c-red    { --c:var(--red);    --cbg:var(--red-bg);    border-color:rgba(255,107,107,.3); }
+.c-lime   { --c:var(--lime);   --cbg:var(--lime-bg);   border-color:rgba(180,220,.3); }
+.c-sky    { --c:var(--sky);    --cbg:var(--sky-bg);    border-color:rgba(120,190,255,.3); }
+.c-amber  { --c:var(--amber);  --cbg:var(--amber-bg);  border-color:rgba(255,200,60,.3); }
+
+.sec-header { background:var(--cbg); border-color:var(--c); color:var(--c); }
+.tbl-wrap   { border-color:rgba(74,158,202,.13); }
+thead th    { border-color:rgba(74,158,202,.1); }
+tbody tr    { border-color:rgba(74,158,202,.07); }
+tbody       { background: var(--surface); }
+
+.tag-table { background:var(--blue-bg);   color:var(--blue); }
+.tag-reg   { background:var(--gold-bg);   color:var(--gold); }
+.tag-brief { background:var(--green-bg);  color:var(--green); }
+.tag-check { background:var(--purple-bg); color:var(--purple); }
+.tag-live  { background:var(--orange-bg); color:var(--orange); }
+
+/* ── EXPAND ALL btn ── */
+.toolbar {
+  display:flex; align-items:center; gap:12px;
+  margin-bottom:18px;
+}
+.btn-all {
+  font-size:10px; font-weight:500;
+  padding:6px 14px; border-radius:7px;
+  background:rgba(74,158,202,.1); border:1px solid rgba(74,158,202,.25);
+  color:var(--blue); cursor:pointer; font-family:'Inter',sans-serif;
+  transition:all .15s; letter-spacing:.04em;
+}
+.btn-all:hover { background:rgba(74,158,202,.2); }
+.toolbar-label { font-size:10px; color:var(--dim); letter-spacing:.08em; }
+
+/* ── ANIMATE ROWS ── */
+@keyframes fadeRow { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+tbody tr { animation: fadeRow .25s ease both; }
+tbody tr:nth-child(1){animation-delay:.02s}
+tbody tr:nth-child(2){animation-delay:.05s}
+tbody tr:nth-child(3){animation-delay:.08s}
+tbody tr:nth-child(4){animation-delay:.11s}
+tbody tr:nth-child(5){animation-delay:.14s}
+tbody tr:nth-child(6){animation-delay:.17s}
+
+/* ── SUMMARY ROW ── */
+.summary {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:12px;
+  margin-bottom:32px;
+}
+.sum-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:10px; padding:14px 18px;
+  animation: fadeRow .4s ease both;
+}
+.sum-card:nth-child(1){animation-delay:.05s}
+.sum-card:nth-child(2){animation-delay:.1s}
+.sum-card:nth-child(3){animation-delay:.15s}
+.sum-card:nth-child(4){animation-delay:.2s}
+.sum-num { font-family:'Unbounded',sans-serif; font-size:22px; font-weight:700; color:var(--blue); }
+.sum-lbl { font-size:10px; color:var(--muted); margin-top:3px; letter-spacing:.04em; }
+
+@media(max-width:700px){
+  .summary{grid-template-columns:repeat(2,1fr);}
+  .td-desc,.td-how{display:none;}
+  table{font-size:11px;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<header>
+  <div class="h-left">
+    <div class="logo">AK</div>
+    <div>
+      <div class="h-title">Marketing <span>Knowledge Base</span></div>
+      <div class="h-sub">AK.CO · Битрикс24 · База знаний 2.0 · 08 Маркетинговые материалы</div>
+    </div>
+  </div>
+  <div class="h-badge">Структура утверждена</div>
+</header>
+
+<!-- SUMMARY -->
+<div class="summary">
+  <div class="sum-card"><div class="sum-num">12</div><div class="sum-lbl">Разделов базы знаний</div></div>
+  <div class="sum-card"><div class="sum-num">42</div><div class="sum-lbl">Документов итого</div></div>
+  <div class="sum-card"><div class="sum-num">5</div><div class="sum-lbl">Типов документов</div></div>
+  <div class="sum-card"><div class="sum-num">∞</div><div class="sum-lbl">Поиск по ключевым словам</div></div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <span class="legend-label">Типы</span>
+  <span class="ltag tag-table">📊 Таблица-реестр</span>
+  <span class="ltag tag-reg">📄 Регламент</span>
+  <span class="ltag tag-brief">📋 Бриф / шаблон</span>
+  <span class="ltag tag-check">✅ Чек-лист</span>
+  <span class="ltag tag-live">🔄 Живой документ</span>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <button class="btn-all" id="btnAll" onclick="toggleAll()">▶ Развернуть все</button>
+  <span class="toolbar-label">Нажмите на раздел для раскрытия</span>
+</div>
+
+<!-- SECTIONS -->
+<div id="sections"></div>
+
+</div>
+
+<script>
+const DATA = [
+  {
+    num:'081', icon:'🖥️', name:'Презентации', color:'c-blue',
+    docs:[
+      { name:'Реестр презентаций',     type:'table', desc:'Название / компания / дата / ссылка / статус',         how:'Найти нужную презентацию' },
+      { name:'Шаблон презентации',     type:'check', desc:'Что обязательно должно быть внутри каждой презентации', how:'Создать новую презентацию' },
+      { name:'Регламент согласования', type:'reg',   desc:'Кто согласует, сроки, порядок правок',                 how:'Запустить согласование' },
+    ]
+  },
+  {
+    num:'082', icon:'📰', name:'Брошюры', color:'c-gold',
+    docs:[
+      { name:'Реестр брошюр',      type:'table', desc:'Продукт / язык / версия / ссылка / актуальность', how:'Найти актуальную версию' },
+      { name:'Бриф на разработку', type:'brief', desc:'Шаблон задания для дизайнера / копирайтера',     how:'Заказать новую брошюру' },
+      { name:'Правила оформления', type:'reg',   desc:'Стандарты верстки, шрифты, отступы, брендбук',   how:'Проверить макет' },
+    ]
+  },
+  {
+    num:'083', icon:'📚', name:'Каталоги', color:'c-teal',
+    docs:[
+      { name:'Реестр каталогов',   type:'table', desc:'Каталоги по компаниям группы / ссылки / версии', how:'Найти каталог компании' },
+      { name:'Бриф на обновление', type:'brief', desc:'Шаблон задания на обновление каталога',         how:'Обновить каталог' },
+      { name:'Ссылки на версии',   type:'live',  desc:'Всегда актуальные ссылки на последние версии',   how:'Поделиться с клиентом' },
+    ]
+  },
+  {
+    num:'084', icon:'🏆', name:'Тендерные материалы', color:'c-orange',
+    docs:[
+      { name:'Реестр тендеров',     type:'table', desc:'Проект / заказчик / статус / дедлайн / ссылки', how:'Найти тендер' },
+      { name:'Чек-лист пакета',     type:'check', desc:'Что входит в тендерный комплект',               how:'Подготовить пакет' },
+      { name:'Регламент подготовки',type:'reg',   desc:'Порядок подготовки и согласования документов',  how:'Запустить тендер' },
+    ]
+  },
+  {
+    num:'085', icon:'✦', name:'Брендбук', color:'c-amber',
+    docs:[
+      { name:'Цвета · Шрифты · Лого',  type:'live',  desc:'#254154, фирменные шрифты, варианты лого AK.CO', how:'Проверить соответствие' },
+      { name:'Регламент использования', type:'reg',   desc:'Что можно и нельзя делать с фирменным стилем',   how:'Проверить материал' },
+      { name:'Ссылка на файл брендбука',type:'live',  desc:'Актуальный файл брендбука на Диске',             how:'Скачать брендбук' },
+    ]
+  },
+  {
+    num:'086', icon:'📖', name:'Методические материалы', color:'c-purple',
+    docs:[
+      { name:'Матрицы подбора AK.CO',    type:'table', desc:'Матрица производители · клиенты · мероприятия', how:'Оценить и выбрать' },
+      { name:'Материалы AK.SPRINT',      type:'table', desc:'Критерии выбора партнёра AKFINANCE, Segmentation Model, Event Datasheet', how:'Работа по спринту' },
+      { name:'LinkedIn Premium — Памятка',type:'live', desc:'Инструкция по работе с LinkedIn Premium',       how:'Работа с LinkedIn' },
+      { name:'Шаблоны брифов',           type:'brief', desc:'Бриф на контент / дизайн / рекламу',            how:'Создать задание' },
+      { name:'Глоссарий AK.CO',          type:'live',  desc:'Термины, аббревиатуры и определения группы',    how:'Уточнить термин' },
+    ]
+  },
+  {
+    num:'087', icon:'📷', name:'Фото и видео', color:'c-pink',
+    docs:[
+      { name:'Реестр материалов', type:'table', desc:'Объект / дата / формат / ссылка на Диск',   how:'Найти нужный файл' },
+      { name:'Регламент съёмки',  type:'reg',   desc:'Стандарты, требования, порядок согласования', how:'Подготовить съёмку' },
+      { name:'Ссылки на Диск',    type:'live',  desc:'Актуальные папки с фото и видео',             how:'Скачать материалы' },
+    ]
+  },
+  {
+    num:'088', icon:'📈', name:'Аналитика и исследования', color:'c-sky',
+    docs:[
+      { name:'Реестр исследований',  type:'table', desc:'Тема / дата / вывод / ссылка',                   how:'Найти исследование' },
+      { name:'Шаблон отчёта',        type:'check', desc:'Чек-лист метрик и структура маркетингового отчёта', how:'Подготовить отчёт' },
+      { name:'Конкурентный анализ',  type:'live',  desc:'Живой документ, обновляется регулярно',           how:'Изучить конкурентов' },
+    ]
+  },
+  {
+    num:'089', icon:'🤖', name:'AI-Промпты', color:'c-green',
+    docs:[
+      { name:'Сегментация клиентов',     type:'live', desc:'Промпты для сегментации B2B, портрет клиента AKFINANCE', how:'Сегментировать базу' },
+      { name:'Аналитика',                type:'live', desc:'Анализ конкурентов, сводка по рынку, оценка мероприятия',how:'Провести анализ' },
+      { name:'Публикации в соц. сетях',  type:'live', desc:'Посты LinkedIn (EN), VK/TG, серия постов по теме',       how:'Написать пост' },
+      { name:'Поиск информации',         type:'live', desc:'Поиск поставщиков, исследование рынка, верификация',     how:'Найти информацию' },
+      { name:'Переводы на другие языки', type:'live', desc:'RU→EN деловой, RU→AR UAE-контекст, RU→ZH',              how:'Перевести документ' },
+      { name:'Работа с документами',     type:'live', desc:'Структура регламента, резюме документа, редактура',      how:'Обработать документ' },
+    ]
+  },
+  {
+    num:'—', icon:'✏️', name:'Контент-материалы', color:'c-lime',
+    docs:[
+      { name:'Контент-план',        type:'table', desc:'Дата / платформа / тема / формат / ответственный / статус', how:'Планировать контент' },
+      { name:'Архив публикаций',    type:'table', desc:'Дата / платформа / тема / ссылка на пост',                 how:'Найти прошлый пост' },
+      { name:'Tone of Voice AK.CO', type:'reg',   desc:'Голос бренда, правила написания текстов, примеры',         how:'Проверить текст' },
+    ]
+  },
+  {
+    num:'—', icon:'💰', name:'Прайсы', color:'c-red',
+    docs:[
+      { name:'Реестр прайсов',          type:'table', desc:'Продукт / компания / валюта / дата / актуальность / ссылка', how:'Найти прайс' },
+      { name:'Регламент изменения цен',  type:'reg',   desc:'Кто согласует изменение, сроки вступления в силу',          how:'Изменить цены' },
+    ]
+  },
+  {
+    num:'—', icon:'🗂️', name:'Проектные маркетинговые материалы', color:'c-orange',
+    docs:[
+      { name:'AKFINANCE UAE Launch',   type:'live', desc:'Бриф → материалы → статус → ссылки',  how:'Открыть проект' },
+      { name:'AKSense China',          type:'live', desc:'Бриф → материалы → статус → ссылки',  how:'Открыть проект' },
+      { name:'SMART SYSTEMS Expo',     type:'live', desc:'Бриф → материалы → статус → ссылки',  how:'Открыть проект' },
+    ]
+  },
+];
+
+const tagMap = {
+  table:{ label:'📊 Таблица-реестр', cls:'tag-table' },
+  reg:  { label:'📄 Регламент',      cls:'tag-reg'   },
+  brief:{ label:'📋 Бриф',           cls:'tag-brief'  },
+  check:{ label:'✅ Чек-лист',       cls:'tag-check'  },
+  live: { label:'🔄 Живой документ', cls:'tag-live'   },
+};
+
+const container = document.getElementById('sections');
+
+DATA.forEach((s, si) => {
+  const wrap = document.createElement('div');
+  wrap.className = 'sec-wrap';
+  wrap.style.animationDelay = (si * 0.04)+'s';
+
+  const rows = s.docs.map((d,i) => {
+    const t = tagMap[d.type];
+    return `<tr>
+      <td class="td-doc">${d.name}</td>
+      <td class="td-type"><span class="tag ${t.cls}">${t.label}</span></td>
+      <td class="td-desc">${d.desc}</td>
+      <td class="td-how"><span class="dot" style="background:var(--c)"></span>${d.how}</td>
+    </tr>`;
+  }).join('');
+
+  wrap.innerHTML = `
+    <div class="sec-header ${s.color}" onclick="toggle(this)">
+      <span class="sec-icon">${s.icon}</span>
+      <span class="sec-num">${s.num}</span>
+      <span class="sec-name">${s.name}</span>
+      <span class="sec-count">${s.docs.length} документов</span>
+      <span class="sec-arrow">▶</span>
+    </div>
+    <div class="tbl-wrap ${s.color}">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:28%">Документ</th>
+            <th style="width:18%">Тип</th>
+            <th style="width:34%">Содержание</th>
+            <th style="width:20%">Когда открывать</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+
+  container.appendChild(wrap);
+});
+
+function toggle(header) {
+  const tbl = header.nextElementSibling;
+  const open = tbl.classList.toggle('open');
+  header.classList.toggle('open', open);
+}
+
+let allOpen = false;
+function toggleAll() {
+  allOpen = !allOpen;
+  document.querySelectorAll('.sec-header').forEach(h => {
+    h.classList.toggle('open', allOpen);
+    h.nextElementSibling.classList.toggle('open', allOpen);
+  });
+  document.getElementById('btnAll').textContent = allOpen ? '▼ Свернуть все' : '▶ Развернуть все';
+}
+</script>
+</body>
+</html>
