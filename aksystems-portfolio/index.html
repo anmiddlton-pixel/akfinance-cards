@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AKSYSTEMS — AK.CO</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--ink:#1A3258;--steel:#254154;--mist:#D6E4F7;--text:#EAF2FB;--dim:#cbdcec}
+html,body{height:100%;background:#050d14;overflow:hidden;color:var(--text);
+  font-family:'Inter','Helvetica Neue','Segoe UI',system-ui,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+#viewport{position:fixed;inset:0;display:grid;place-items:center}
+#stage{width:1280px;height:720px;position:relative;transform-origin:center center}
+.slide{position:absolute;inset:0;width:1280px;height:720px;overflow:hidden;isolation:isolate;display:none}
+.slide.active{display:block}
+
+/* ФОН по продукту + заглушка-градиент */
+.slide::before{content:"";position:absolute;inset:0;z-index:-2;background-size:cover;background-position:center;
+  background-image:
+    radial-gradient(120% 90% at 78% 18%, #35586e 0%, transparent 55%),
+    radial-gradient(90% 80% at 95% 80%, #1d3a4f 0%, transparent 60%),
+    linear-gradient(135deg,#0e1f2c,#1A3258 55%,#254154 100%)}
+.slide[data-product="aksystems"]::before{background-image:url(assets/bg-aksystems.png)}
+.slide[data-product="aksense"]::before  {background-image:url(assets/bg-aksense.png)}
+.slide[data-product="akstream"]::before {background-image:url(assets/bg-akstream.png)}
+.slide[data-product="smartsys"]::before {background-image:url(assets/bg-smartsys.png)}
+.slide[data-product="akgrid"]::before   {background-image:url(assets/bg-akgrid.png)}
+.slide::after{content:"";position:absolute;inset:0;z-index:-1;
+  background:radial-gradient(140% 120% at 30% 40%, transparent 40%, rgba(4,10,16,.45) 100%)}
+
+/* ===== общий бренд-локап ===== */
+.brand{display:flex;align-items:center;gap:11px;height:28px}
+.brand .mk{height:28px;width:auto;display:block}
+.brand .wd{height:17px;width:auto;display:block;opacity:.97}
+.brand .wdt{font-size:21px;font-weight:800;letter-spacing:.03em;color:#fff}
+/* solo: один крупный леттеринг (без знака) — в том же углу, но крупнее для читаемости */
+.brand.solo{height:auto}
+.brand.solo .wd{height:43px;opacity:1}
+
+.corner{position:absolute;left:30px;bottom:18px;height:56px;width:auto;opacity:.8;z-index:6;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.7))}
+/* AKSYSTEMS: в углу леттеринг продукта (широкий) вместо квадратного знака */
+.cornerword{height:40px;bottom:20px;opacity:.95}
+[data-product="aksystems"] .tag{left:142px;bottom:34px}
+.tag{position:absolute;left:100px;bottom:26px;font-size:10.5px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--dim);opacity:.8;z-index:6}
+
+/* крупный полупрозрачный знак AK.CO поверх обложки (watermark), в ПРАВОМ НИЖНЕМ углу */
+.cover .wm{position:absolute;right:-150px;bottom:-120px;
+  height:560px;width:auto;opacity:.13;z-index:4;pointer-events:none}
+
+/* верхнее нав-меню продуктов (как DESTINATIONS… в ICELAND) */
+.topnav{position:absolute;right:104px;top:110px;display:flex;gap:24px;z-index:5}
+.topnav .navi{font-size:12px;letter-spacing:.12em;font-weight:600;color:rgba(255,255,255,.6);
+  text-transform:uppercase}
+.topnav .navi.on{color:#fff;border-bottom:2px solid #fff;padding-bottom:4px}
+
+/* ===== разрезанный заголовок (work) ===== */
+.cut2{position:absolute;font-weight:800;letter-spacing:-.02em;white-space:nowrap;z-index:3;line-height:.9}
+.cut2 .on{color:rgba(255,255,255,.20);-webkit-text-stroke:1px rgba(255,255,255,.42)}
+.cut2 .off{color:#fff;text-shadow:0 6px 34px rgba(0,0,0,.5)}
+.cut2{left:60px;top:150px;font-size:64px}
+
+/* =========== ОБЛОЖКА (ICELAND) =========== */
+/* ЗАГОЛОВОК лежит ПОД панелью (z-index:1). Панель сверху с backdrop-filter → её левую
+   часть размывает само стекло (как ICE), правая часть остаётся чёткой на фото (как LEND). */
+.cover .htitle{position:absolute;left:104px;top:296px;font-size:132px;font-weight:800;
+  letter-spacing:-.035em;line-height:.82;color:#fff;white-space:nowrap;z-index:1;
+  text-shadow:0 10px 44px rgba(0,0,0,.45)}
+/* ОДНА большая стеклянная панель ПО ЦЕНТРУ (равные отступы). Весь заголовок — НА стекле.
+   ЛЕВАЯ часть стекла МАТОВАЯ (только blur + нейтральное затемнение, БЕЗ цвета),
+   ПРАВАЯ — ПРОЗРАЧНАЯ: blur и затемнение сходят к центру → справа фото видно чётко, но под стеклом. */
+.cover .panel{position:absolute;left:80px;top:90px;right:80px;bottom:90px;border-radius:18px;
+  overflow:hidden;border:1px solid rgba(255,255,255,.30);box-shadow:0 30px 72px rgba(0,0,0,.42);z-index:2}
+/* AKSYSTEMS-обложка: фото завода ВНУТРИ стеклянной панели — отдельным слоем под стеклом (z-index:-1,
+   стекло ::before его размывает слева, справа чётко). opacity делает фото немного прозрачнее,
+   сквозь него слегка проступает общий фон bg-aksystems.png. */
+.cover.pc .coverphoto{position:absolute;inset:0;z-index:-1;
+  background-image:url(assets/bg-aksystems-cover.png);background-size:cover;background-position:center;
+  opacity:.88}
+.cover .panel::before{content:"";position:absolute;inset:0;z-index:0;
+  -webkit-backdrop-filter:blur(13px) saturate(118%) brightness(1.05);backdrop-filter:blur(13px) saturate(118%) brightness(1.05);
+  background:rgba(255,255,255,.04);
+  -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 40%,transparent 66%);
+          mask-image:linear-gradient(90deg,#000 0%,#000 40%,transparent 66%)}
+.cover .panel::after{content:"";position:absolute;inset:0;z-index:1;
+  background:linear-gradient(90deg, rgba(6,8,10,.42) 0%, rgba(6,8,10,.18) 40%, transparent 62%)}
+/* AKSYSTEMS-обложка: панель чуть прозрачнее — слабее тёмный тинт, фото проступает сильнее */
+.cover.pc .panel::after{background:linear-gradient(90deg, rgba(6,8,10,.28) 0%, rgba(6,8,10,.10) 40%, transparent 62%)}
+.cover .pad{position:relative;z-index:2;height:100%;width:44%;padding:30px 40px 34px;display:flex;flex-direction:column}
+.cover .topbar{display:flex;align-items:center}
+.cover.pc .topbar{margin:-12px 0 0 -8px}   /* логотип ближе к углу панели */
+.cover .lower{margin-top:auto}
+.cover.pc .lower{margin-bottom:14px}   /* лёгкий подъём над низом панели */
+.row01{display:flex;gap:18px;align-items:flex-start}
+.idx{display:flex;flex-direction:column;gap:11px;align-items:flex-start;flex:0 0 auto}
+.pg{font-size:24px;font-weight:800;color:#fff;line-height:1;
+  border:1px solid rgba(255,255,255,.55);border-radius:6px;padding:5px 9px;letter-spacing:.02em}
+.dots{display:flex;gap:7px}
+.dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.4)}
+.dots i.on{background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.2)}
+.htext{padding-top:2px}
+.ch{font-size:17px;font-weight:700;color:#fff;line-height:1.22;margin-bottom:8px}
+.lede{font-size:11.5px;line-height:1.5;color:var(--dim)}
+/* обложка с проблематикой: заголовок-подпись и lede — основные на слайде, крупнее */
+.cover.pc .ch{font-size:24px;line-height:1.14;margin-bottom:9px}
+.cover.pc .lede{font-size:13px;line-height:1.46}
+.lede-em{color:#fff;font-weight:700}
+/* отдельный блок «контур площадки» с чипами-плашками */
+.contour{margin-top:26px}
+.contour .cl{font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--mist);opacity:.92;margin-bottom:9px}
+.cchips{display:flex;flex-wrap:wrap;gap:7px}
+.cchip{font-size:11.5px;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.36);color:#fff}
+.more{display:flex;align-items:center;gap:14px;margin-top:20px;font-size:10.5px;
+  letter-spacing:.18em;font-weight:700;color:#fff;text-transform:uppercase}
+.more .ln{flex:1;height:1px;background:rgba(255,255,255,.5)}
+.more b{font-size:17px;font-weight:400}
+
+/* --- обложка С ПРОБЛЕМАТИКОЙ (.cover.pc): герой целиком + блок проблем справа --- */
+/* AKSYSTEMS-обложка: буквы заголовка ПРОЗРАЧНЫ и вырезаны по чёткой картинке фона
+   (background-clip:text), вокруг — матовое стекло панели. background-size/position
+   совмещены с фоном слайда (cover≈1280×720), смещение = минус позиция заголовка. */
+.cover.pc .htitle{top:186px;font-size:98px;z-index:3;
+  color:transparent;-webkit-text-fill-color:transparent;text-shadow:none;
+  background-image:url(assets/bg-aksystems.png);background-repeat:no-repeat;
+  background-size:1280px 720px;background-position:-104px -186px;
+  -webkit-background-clip:text;background-clip:text;
+  filter:drop-shadow(0 6px 18px rgba(0,0,0,.55))}
+/* правый блок проблематики — на собственной стеклянной плашке (как левая панель) */
+.probside{position:absolute;right:62px;bottom:52px;width:38%;z-index:3;display:flex;flex-direction:column;
+  padding:22px 24px;border-radius:16px;border:1px solid rgba(255,255,255,.24);
+  background:rgba(12,26,40,.26);box-shadow:0 26px 64px rgba(0,0,0,.42);
+  -webkit-backdrop-filter:blur(13px) saturate(116%);backdrop-filter:blur(13px) saturate(116%)}
+.probside .psl{font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:#fff;font-weight:700;
+  margin-bottom:15px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.2)}
+.probside .prlist{display:flex;flex-direction:column;gap:11px}
+.probside .pr{display:grid;grid-template-columns:26px 1fr;gap:11px;align-items:start}
+.probside .pr .n{font-size:13px;font-weight:800;color:#fff}
+.probside .pr p{font-size:11.5px;line-height:1.36;color:#eaf2fb}
+
+/* --- слайд ЭКОСИСТЕМА (.eco): ОДНА панель как на слайде 2 (80/80/90/90),
+   нейтральный тинт без синевы, справа — чистое окно в стекле с деревом --- */
+/* ВНИМАНИЕ: селекторы .work.eco — выше специфичности базового .work .panel(::after/::before),
+   который объявлен НИЖЕ в CSS и иначе перебивал бы (его тинт rgba(16,34,52) = синий!). */
+.work.eco .panel{left:80px;right:80px;top:90px;bottom:90px}         /* габариты = как у других слайдов */
+.work.eco .pad{padding:24px 48px 20px}
+/* тинт нейтральный (без синевы): плотный слева → прозрачный справа */
+.work.eco .panel::after{background:linear-gradient(90deg, rgba(6,8,10,.42) 0%, rgba(6,8,10,.18) 40%, transparent 62%)}
+/* ICELAND: блюр (матовость) только слева, плавно сходит на нет вправо →
+   правая сторона панели становится прозрачной, виден чёткий фон. Логотип AKSYSTEMS — на ней. */
+.work.eco .panel::before{
+  -webkit-mask-image:linear-gradient(90deg, #000 0%, #000 40%, transparent 74%);
+          mask-image:linear-gradient(90deg, #000 0%, #000 40%, transparent 74%)}
+.eco-eyebrow{margin-top:10px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  font-weight:700;color:var(--mist)}
+.eco-claim{margin-top:6px;font-size:15px;line-height:1.3;font-weight:600;color:#fff;max-width:62%}
+.eco-claim .neq{color:var(--mist);font-weight:800;font-size:20px;margin-right:7px}
+.eco-claim em{font-style:normal;font-weight:800;color:#fff}
+/* две текстовые колонки в еле заметной стеклянной плашке, выровненной по левому краю шапки */
+.eco-cols{position:relative;z-index:1;margin:12px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:34px;
+  max-width:82%;padding:15px 20px;border-radius:16px;border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.035);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.eco-card{position:relative}
+/* логотип AKSYSTEMS — небольшим в нижнем-правом углу (тёмная зона), ПОЗАДИ текста (z-index:0).
+   Линии — матовое стекло (backdrop-filter по форме знака-маски, data-URI для file://). */
+.eco-logo{position:absolute;right:14px;bottom:16px;z-index:0;
+  width:104px;height:97px;pointer-events:none;
+  -webkit-mask-image:url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzkzIiBoZWlnaHQ9IjM2NyIgdmlld0JveD0iMCAwIDM5MyAzNjciIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIwX2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTI2NSA0Ni41TDE0MS41OTMgNDFDMTM3Ljg2NCA0MSAxMzYgNDIuODMzMyAxMzYgNDYuNUMxMzYgNTAuMTY2NyAxMzcuODY0IDUyIDE0MS41OTMgNTJMMjY1IDQ2LjVaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIxX2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTMxNCA4MC41TDkyLjU2MDUgNzVDODguODUzNSA3NSA4NyA3Ni44MzMzIDg3IDgwLjVDODcgODQuMTY2NyA4OC44NTM1IDg2IDkyLjU2MDUgODZMMzE0IDgwLjVaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIyX2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTMzOSAxMTQuNUw2Ni41NjUyIDEwOUM2Mi44NTUxIDEwOSA2MSAxMTAuODMzIDYxIDExNC41QzYxIDExOC4xNjcgNjIuODU1MSAxMjAgNjYuNTY1MiAxMjBMMzM5IDExNC41WiIgZmlsbD0id2hpdGUiLz4KPC9nPgo8ZyBmaWx0ZXI9InVybCgjZmlsdGVyM19kXzEzODRfMjA0KSI+CjxwYXRoIGQ9Ik0zNTMgMTQ5LjVMNTMuNTcxNyAxNDRDNDkuODU3MiAxNDQgNDggMTQ1LjgzMyA0OCAxNDkuNUM0OCAxNTMuMTY3IDQ5Ljg1NzIgMTU1IDUzLjU3MTcgMTU1TDM1MyAxNDkuNVoiIGZpbGw9IndoaXRlIi8+CjwvZz4KPGcgZmlsdGVyPSJ1cmwoI2ZpbHRlcjRfZF8xMzg0XzIwNCkiPgo8cGF0aCBkPSJNMzU3IDE4My41TDQ5LjU2NDcgMTc4QzQ1Ljg1NDkgMTc4IDQ0IDE3OS44MzMgNDQgMTgzLjVDNDQgMTg3LjE2NyA0NS44NTQ5IDE4OSA0OS41NjQ3IDE4OUwzNTcgMTgzLjVaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXI1X2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTM1MyAyMTguNUw1My41NzE3IDIxM0M0OS44NTcyIDIxMyA0OCAyMTQuODMzIDQ4IDIxOC41QzQ4IDIyMi4xNjcgNDkuODU3MiAyMjQgNTMuNTcxNyAyMjRMMzUzIDIxOC41WiIgZmlsbD0id2hpdGUiLz4KPC9nPgo8ZyBmaWx0ZXI9InVybCgjZmlsdGVyNl9kXzEzODRfMjA0KSI+CjxwYXRoIGQ9Ik0zMzkgMjUyLjVMNjYuNTY1MiAyNDdDNjIuODU1MSAyNDcgNjEgMjQ4LjgzMyA2MSAyNTIuNUM2MSAyNTYuMTY3IDYyLjg1NTEgMjU4IDY2LjU2NTIgMjU4TDMzOSAyNTIuNVoiIGZpbGw9IndoaXRlIi8+CjwvZz4KPGcgZmlsdGVyPSJ1cmwoI2ZpbHRlcjdfZF8xMzg0XzIwNCkiPgo8cGF0aCBkPSJNMzE0IDI4Ny41TDkyLjU2MDUgMjgyQzg4Ljg1MzUgMjgyIDg3IDI4My44MzMgODcgMjg3LjVDODcgMjkxLjE2NyA4OC44NTM1IDI5MyA5Mi41NjA1IDI5M0wzMTQgMjg3LjVaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXI4X2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTI2NSAzMjEuNUwxNDEuNTkzIDMxNkMxMzcuODY0IDMxNiAxMzYgMzE3LjgzMyAxMzYgMzIxLjVDMTM2IDMyNS4xNjcgMTM3Ljg2NCAzMjcgMTQxLjU5MyAzMjdMMjY1IDMyMS41WiIgZmlsbD0id2hpdGUiLz4KPC9nPgo8ZGVmcz4KPGZpbHRlciBpZD0iZmlsdGVyMF9kXzEzODRfMjA0IiB4PSIxMzIiIHk9IjM5IiB3aWR0aD0iMTM3IiBoZWlnaHQ9IjE5IiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ii8+CjxmZUNvbG9yTWF0cml4IGluPSJTb3VyY2VBbHBoYSIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDEyNyAwIiByZXN1bHQ9ImhhcmRBbHBoYSIvPgo8ZmVPZmZzZXQgZHk9IjIiLz4KPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMiIvPgo8ZmVDb21wb3NpdGUgaW4yPSJoYXJkQWxwaGEiIG9wZXJhdG9yPSJvdXQiLz4KPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAuMjUgMCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9ImVmZmVjdDFfZHJvcFNoYWRvd18xMzg0XzIwNCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImVmZmVjdDFfZHJvcFNoYWRvd18xMzg0XzIwNCIgcmVzdWx0PSJzaGFwZSIvPgo8L2ZpbHRlcj4KPGZpbHRlciBpZD0iZmlsdGVyMV9kXzEzODRfMjA0IiB4PSI4MyIgeT0iNzMiIHdpZHRoPSIyMzUiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXIyX2RfMTM4NF8yMDQiIHg9IjU3IiB5PSIxMDciIHdpZHRoPSIyODYiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXIzX2RfMTM4NF8yMDQiIHg9IjQ0IiB5PSIxNDIiIHdpZHRoPSIzMTMiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI0X2RfMTM4NF8yMDQiIHg9IjQwIiB5PSIxNzYiIHdpZHRoPSIzMjEiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI1X2RfMTM4NF8yMDQiIHg9IjQ0IiB5PSIyMTEiIHdpZHRoPSIzMTMiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI2X2RfMTM4NF8yMDQiIHg9IjU3IiB5PSIyNDUiIHdpZHRoPSIyODYiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI3X2RfMTM4NF8yMDQiIHg9IjgzIiB5PSIyODAiIHdpZHRoPSIyMzUiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI4X2RfMTM4NF8yMDQiIHg9IjEzMiIgeT0iMzE0IiB3aWR0aD0iMTM3IiBoZWlnaHQ9IjE5IiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ii8+CjxmZUNvbG9yTWF0cml4IGluPSJTb3VyY2VBbHBoYSIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDEyNyAwIiByZXN1bHQ9ImhhcmRBbHBoYSIvPgo8ZmVPZmZzZXQgZHk9IjIiLz4KPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMiIvPgo8ZmVDb21wb3NpdGUgaW4yPSJoYXJkQWxwaGEiIG9wZXJhdG9yPSJvdXQiLz4KPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAuMjUgMCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9ImVmZmVjdDFfZHJvcFNoYWRvd18xMzg0XzIwNCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImVmZmVjdDFfZHJvcFNoYWRvd18xMzg0XzIwNCIgcmVzdWx0PSJzaGFwZSIvPgo8L2ZpbHRlcj4KPC9kZWZzPgo8L3N2Zz4K");mask-image:url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzkzIiBoZWlnaHQ9IjM2NyIgdmlld0JveD0iMCAwIDM5MyAzNjciIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIwX2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTI2NSA0Ni41TDE0MS41OTMgNDFDMTM3Ljg2NCA0MSAxMzYgNDIuODMzMyAxMzYgNDYuNUMxMzYgNTAuMTY2NyAxMzcuODY0IDUyIDE0MS41OTMgNTJMMjY1IDQ2LjVaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIxX2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTMxNCA4MC41TDkyLjU2MDUgNzVDODguODUzNSA3NSA4NyA3Ni44MzMzIDg3IDgwLjVDODcgODQuMTY2NyA4OC44NTM1IDg2IDkyLjU2MDUgODZMMzE0IDgwLjVaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIyX2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTMzOSAxMTQuNUw2Ni41NjUyIDEwOUM2Mi44NTUxIDEwOSA2MSAxMTAuODMzIDYxIDExNC41QzYxIDExOC4xNjcgNjIuODU1MSAxMjAgNjYuNTY1MiAxMjBMMzM5IDExNC41WiIgZmlsbD0id2hpdGUiLz4KPC9nPgo8ZyBmaWx0ZXI9InVybCgjZmlsdGVyM19kXzEzODRfMjA0KSI+CjxwYXRoIGQ9Ik0zNTMgMTQ5LjVMNTMuNTcxNyAxNDRDNDkuODU3MiAxNDQgNDggMTQ1LjgzMyA0OCAxNDkuNUM0OCAxNTMuMTY3IDQ5Ljg1NzIgMTU1IDUzLjU3MTcgMTU1TDM1MyAxNDkuNVoiIGZpbGw9IndoaXRlIi8+CjwvZz4KPGcgZmlsdGVyPSJ1cmwoI2ZpbHRlcjRfZF8xMzg0XzIwNCkiPgo8cGF0aCBkPSJNMzU3IDE4My41TDQ5LjU2NDcgMTc4QzQ1Ljg1NDkgMTc4IDQ0IDE3OS44MzMgNDQgMTgzLjVDNDQgMTg3LjE2NyA0NS44NTQ5IDE4OSA0OS41NjQ3IDE4OUwzNTcgMTgzLjVaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXI1X2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTM1MyAyMTguNUw1My41NzE3IDIxM0M0OS44NTcyIDIxMyA0OCAyMTQuODMzIDQ4IDIxOC41QzQ4IDIyMi4xNjcgNDkuODU3MiAyMjQgNTMuNTcxNyAyMjRMMzUzIDIxOC41WiIgZmlsbD0id2hpdGUiLz4KPC9nPgo8ZyBmaWx0ZXI9InVybCgjZmlsdGVyNl9kXzEzODRfMjA0KSI+CjxwYXRoIGQ9Ik0zMzkgMjUyLjVMNjYuNTY1MiAyNDdDNjIuODU1MSAyNDcgNjEgMjQ4LjgzMyA2MSAyNTIuNUM2MSAyNTYuMTY3IDYyLjg1NTEgMjU4IDY2LjU2NTIgMjU4TDMzOSAyNTIuNVoiIGZpbGw9IndoaXRlIi8+CjwvZz4KPGcgZmlsdGVyPSJ1cmwoI2ZpbHRlcjdfZF8xMzg0XzIwNCkiPgo8cGF0aCBkPSJNMzE0IDI4Ny41TDkyLjU2MDUgMjgyQzg4Ljg1MzUgMjgyIDg3IDI4My44MzMgODcgMjg3LjVDODcgMjkxLjE2NyA4OC44NTM1IDI5MyA5Mi41NjA1IDI5M0wzMTQgMjg3LjVaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXI4X2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTI2NSAzMjEuNUwxNDEuNTkzIDMxNkMxMzcuODY0IDMxNiAxMzYgMzE3LjgzMyAxMzYgMzIxLjVDMTM2IDMyNS4xNjcgMTM3Ljg2NCAzMjcgMTQxLjU5MyAzMjdMMjY1IDMyMS41WiIgZmlsbD0id2hpdGUiLz4KPC9nPgo8ZGVmcz4KPGZpbHRlciBpZD0iZmlsdGVyMF9kXzEzODRfMjA0IiB4PSIxMzIiIHk9IjM5IiB3aWR0aD0iMTM3IiBoZWlnaHQ9IjE5IiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ii8+CjxmZUNvbG9yTWF0cml4IGluPSJTb3VyY2VBbHBoYSIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDEyNyAwIiByZXN1bHQ9ImhhcmRBbHBoYSIvPgo8ZmVPZmZzZXQgZHk9IjIiLz4KPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMiIvPgo8ZmVDb21wb3NpdGUgaW4yPSJoYXJkQWxwaGEiIG9wZXJhdG9yPSJvdXQiLz4KPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAuMjUgMCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9ImVmZmVjdDFfZHJvcFNoYWRvd18xMzg0XzIwNCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImVmZmVjdDFfZHJvcFNoYWRvd18xMzg0XzIwNCIgcmVzdWx0PSJzaGFwZSIvPgo8L2ZpbHRlcj4KPGZpbHRlciBpZD0iZmlsdGVyMV9kXzEzODRfMjA0IiB4PSI4MyIgeT0iNzMiIHdpZHRoPSIyMzUiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXIyX2RfMTM4NF8yMDQiIHg9IjU3IiB5PSIxMDciIHdpZHRoPSIyODYiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXIzX2RfMTM4NF8yMDQiIHg9IjQ0IiB5PSIxNDIiIHdpZHRoPSIzMTMiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI0X2RfMTM4NF8yMDQiIHg9IjQwIiB5PSIxNzYiIHdpZHRoPSIzMjEiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI1X2RfMTM4NF8yMDQiIHg9IjQ0IiB5PSIyMTEiIHdpZHRoPSIzMTMiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI2X2RfMTM4NF8yMDQiIHg9IjU3IiB5PSIyNDUiIHdpZHRoPSIyODYiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI3X2RfMTM4NF8yMDQiIHg9IjgzIiB5PSIyODAiIHdpZHRoPSIyMzUiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI4X2RfMTM4NF8yMDQiIHg9IjEzMiIgeT0iMzE0IiB3aWR0aD0iMTM3IiBoZWlnaHQ9IjE5IiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ii8+CjxmZUNvbG9yTWF0cml4IGluPSJTb3VyY2VBbHBoYSIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDEyNyAwIiByZXN1bHQ9ImhhcmRBbHBoYSIvPgo8ZmVPZmZzZXQgZHk9IjIiLz4KPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMiIvPgo8ZmVDb21wb3NpdGUgaW4yPSJoYXJkQWxwaGEiIG9wZXJhdG9yPSJvdXQiLz4KPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAuMjUgMCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9ImVmZmVjdDFfZHJvcFNoYWRvd18xMzg0XzIwNCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImVmZmVjdDFfZHJvcFNoYWRvd18xMzg0XzIwNCIgcmVzdWx0PSJzaGFwZSIvPgo8L2ZpbHRlcj4KPC9kZWZzPgo8L3N2Zz4K");
+  -webkit-mask-size:contain;mask-size:contain;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-position:center;mask-position:center;
+  background:rgba(255,255,255,.06);
+  -webkit-backdrop-filter:blur(7px) saturate(126%) brightness(1.14);
+          backdrop-filter:blur(7px) saturate(126%) brightness(1.14)}
+/* заголовок-плашка по центру колонки: бейдж со стеклом, скруглённый */
+.eco-cols h4{display:block;width:max-content;max-width:100%;margin:0 auto 12px;text-align:center;
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mist);font-weight:700;
+  padding:6px 15px;border-radius:999px;border:1px solid rgba(255,255,255,.26);
+  background:rgba(255,255,255,.07);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  box-shadow:0 8px 22px rgba(0,0,0,.28)}
+.eco-cols ul{display:flex;flex-direction:column;gap:11px}
+.eco-cols li{list-style:none;font-size:12.5px;line-height:1.42;padding-left:15px;position:relative;color:#eaf2fb}
+.eco-cols li::before{content:"";position:absolute;left:0;top:7px;width:5px;height:5px;
+  border-radius:50%;background:var(--mist);opacity:.85}
+
+/* =========== ТЕКСТОВЫЙ (GORNEE TYR) =========== */
+/* плашка ПО ЦЕНТРУ, фон-полосы вокруг; сквозь стекло — та же картинка (backdrop-filter),
+   ЛЕВАЯ сторона матовая (плотный градиент под текст), ПРАВАЯ — чистое стекло с размытым фото */
+.work .panel{position:absolute;left:92px;right:92px;top:66px;bottom:92px;border-radius:24px;
+  overflow:hidden;border:1px solid rgba(255,255,255,.30);box-shadow:0 36px 90px rgba(0,0,0,.5);z-index:1}
+.work .panel::before{content:"";position:absolute;inset:0;z-index:0;
+  -webkit-backdrop-filter:blur(16px) saturate(122%) brightness(1.07);backdrop-filter:blur(16px) saturate(122%) brightness(1.07);
+  background:rgba(255,255,255,.05)}
+.work .panel::after{content:"";position:absolute;inset:0;z-index:1;
+  background:linear-gradient(90deg, rgba(16,34,52,.62) 0%, rgba(16,34,52,.40) 36%, rgba(16,34,52,.10) 66%, rgba(255,255,255,0) 100%)}
+.work .pad{position:relative;z-index:2;height:100%;padding:30px 48px 26px;display:flex;flex-direction:column}
+.work .cut2{position:static;margin:10px 0 8px;font-size:60px;line-height:.9}
+.work .whead,.work .cut2,.work .hblock,.work .claim,.work .rows,.work .whorow{max-width:55%}
+/* РЕШЕНИЯ (AKSYSTEMS): размер главной панели как на слайде 1 + нейтральный тинт (без синевы) */
+.work.sol[data-product="aksystems"] .panel{left:80px;right:80px;top:90px;bottom:90px}
+.work.sol[data-product="aksystems"] .panel::after{
+  background:linear-gradient(90deg, rgba(6,8,10,.42) 0%, rgba(6,8,10,.18) 40%, transparent 62%)}
+/* РЕШЕНИЯ (AKSYSTEMS): заголовок уведён в пустую правую зону, буквы — вырез по ЧЁТКОЙ картинке фона */
+.work.sol[data-product="aksystems"] .cut2{position:absolute;left:610px;top:80px;margin:0;max-width:none;
+  font-size:66px;z-index:3;color:transparent;-webkit-text-fill-color:transparent;
+  background-image:url(assets/bg-aksystems.png);background-repeat:no-repeat;
+  background-size:1280px 720px;background-position:-691px -171px;
+  -webkit-background-clip:text;background-clip:text;
+  filter:drop-shadow(0 4px 14px rgba(0,0,0,.75))}
+.work.sol[data-product="aksystems"] .cut2 .on,
+.work.sol[data-product="aksystems"] .cut2 .off{color:transparent;-webkit-text-fill-color:transparent;
+  -webkit-text-stroke:0;text-shadow:none;background:none}
+/* РЕШЕНИЯ (AKSYSTEMS): «Кому это нужно» — отдельная стеклянная плашка справа снизу */
+.work.sol[data-product="aksystems"] .whorow{position:absolute;right:60px;bottom:50px;width:34%;max-width:none;
+  margin:0;padding:20px 22px;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;z-index:3;
+  border-radius:16px;border:1px solid rgba(255,255,255,.24);background:rgba(18,19,21,.24);
+  box-shadow:0 26px 64px rgba(0,0,0,.42);
+  -webkit-backdrop-filter:blur(13px) saturate(108%);backdrop-filter:blur(13px) saturate(108%)}
+.work.sol[data-product="aksystems"] .whorow .wl{flex-basis:100%;margin:0 0 8px 0;padding-bottom:10px;
+  border-bottom:1px solid rgba(255,255,255,.2);opacity:.92}
+/* РЕШЕНИЯ (AKSYSTEMS): эйбрау, заметный подзаголовок, контур-блок в левой колонке */
+.work.sol[data-product="aksystems"] .weyebrow{position:absolute;right:60px;width:34%;text-align:left;
+  bottom:204px;margin:0;z-index:3;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--mist);font-weight:700;opacity:.95}
+.work.sol[data-product="aksystems"] .sub{font-size:13.5px;color:#fff;opacity:1;font-weight:600;
+  letter-spacing:.05em;margin-top:7px}
+.work.sol[data-product="aksystems"] .contour{position:absolute;left:48px;bottom:50px;max-width:48%;margin:0;z-index:3}
+.work.sol[data-product="aksystems"] .hblock{margin-top:34px}   /* опустить основной текст ниже логотипа */
+/* крупный знак AKSYSTEMS справа: его линии — ПРОЗРАЧНЫЕ окна в чёткий фон (вырез по SVG-маске) */
+.work.sol[data-product="aksystems"] .wmbg{position:absolute;right:64px;top:64px;width:360px;height:360px;
+  z-index:2;pointer-events:none;opacity:.65;filter:drop-shadow(0 2px 9px rgba(0,0,0,.55));
+  background-image:url(assets/bg-aksystems.png);background-repeat:no-repeat;
+  background-size:1280px 720px;background-position:-775px -155px;
+  -webkit-mask-image:url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzkzIiBoZWlnaHQ9IjM2NyIgdmlld0JveD0iMCAwIDM5MyAzNjciIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIwX2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTI2NSA0Ni41TDE0MS41OTMgNDFDMTM3Ljg2NCA0MSAxMzYgNDIuODMzMyAxMzYgNDYuNUMxMzYgNTAuMTY2NyAxMzcuODY0IDUyIDE0MS41OTMgNTJMMjY1IDQ2LjVaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIxX2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTMxNCA4MC41TDkyLjU2MDUgNzVDODguODUzNSA3NSA4NyA3Ni44MzMzIDg3IDgwLjVDODcgODQuMTY2NyA4OC44NTM1IDg2IDkyLjU2MDUgODZMMzE0IDgwLjVaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIyX2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTMzOSAxMTQuNUw2Ni41NjUyIDEwOUM2Mi44NTUxIDEwOSA2MSAxMTAuODMzIDYxIDExNC41QzYxIDExOC4xNjcgNjIuODU1MSAxMjAgNjYuNTY1MiAxMjBMMzM5IDExNC41WiIgZmlsbD0id2hpdGUiLz4KPC9nPgo8ZyBmaWx0ZXI9InVybCgjZmlsdGVyM19kXzEzODRfMjA0KSI+CjxwYXRoIGQ9Ik0zNTMgMTQ5LjVMNTMuNTcxNyAxNDRDNDkuODU3MiAxNDQgNDggMTQ1LjgzMyA0OCAxNDkuNUM0OCAxNTMuMTY3IDQ5Ljg1NzIgMTU1IDUzLjU3MTcgMTU1TDM1MyAxNDkuNVoiIGZpbGw9IndoaXRlIi8+CjwvZz4KPGcgZmlsdGVyPSJ1cmwoI2ZpbHRlcjRfZF8xMzg0XzIwNCkiPgo8cGF0aCBkPSJNMzU3IDE4My41TDQ5LjU2NDcgMTc4QzQ1Ljg1NDkgMTc4IDQ0IDE3OS44MzMgNDQgMTgzLjVDNDQgMTg3LjE2NyA0NS44NTQ5IDE4OSA0OS41NjQ3IDE4OUwzNTcgMTgzLjVaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXI1X2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTM1MyAyMTguNUw1My41NzE3IDIxM0M0OS44NTcyIDIxMyA0OCAyMTQuODMzIDQ4IDIxOC41QzQ4IDIyMi4xNjcgNDkuODU3MiAyMjQgNTMuNTcxNyAyMjRMMzUzIDIxOC41WiIgZmlsbD0id2hpdGUiLz4KPC9nPgo8ZyBmaWx0ZXI9InVybCgjZmlsdGVyNl9kXzEzODRfMjA0KSI+CjxwYXRoIGQ9Ik0zMzkgMjUyLjVMNjYuNTY1MiAyNDdDNjIuODU1MSAyNDcgNjEgMjQ4LjgzMyA2MSAyNTIuNUM2MSAyNTYuMTY3IDYyLjg1NTEgMjU4IDY2LjU2NTIgMjU4TDMzOSAyNTIuNVoiIGZpbGw9IndoaXRlIi8+CjwvZz4KPGcgZmlsdGVyPSJ1cmwoI2ZpbHRlcjdfZF8xMzg0XzIwNCkiPgo8cGF0aCBkPSJNMzE0IDI4Ny41TDkyLjU2MDUgMjgyQzg4Ljg1MzUgMjgyIDg3IDI4My44MzMgODcgMjg3LjVDODcgMjkxLjE2NyA4OC44NTM1IDI5MyA5Mi41NjA1IDI5M0wzMTQgMjg3LjVaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXI4X2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTI2NSAzMjEuNUwxNDEuNTkzIDMxNkMxMzcuODY0IDMxNiAxMzYgMzE3LjgzMyAxMzYgMzIxLjVDMTM2IDMyNS4xNjcgMTM3Ljg2NCAzMjcgMTQxLjU5MyAzMjdMMjY1IDMyMS41WiIgZmlsbD0id2hpdGUiLz4KPC9nPgo8ZGVmcz4KPGZpbHRlciBpZD0iZmlsdGVyMF9kXzEzODRfMjA0IiB4PSIxMzIiIHk9IjM5IiB3aWR0aD0iMTM3IiBoZWlnaHQ9IjE5IiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ii8+CjxmZUNvbG9yTWF0cml4IGluPSJTb3VyY2VBbHBoYSIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDEyNyAwIiByZXN1bHQ9ImhhcmRBbHBoYSIvPgo8ZmVPZmZzZXQgZHk9IjIiLz4KPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMiIvPgo8ZmVDb21wb3NpdGUgaW4yPSJoYXJkQWxwaGEiIG9wZXJhdG9yPSJvdXQiLz4KPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAuMjUgMCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9ImVmZmVjdDFfZHJvcFNoYWRvd18xMzg0XzIwNCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImVmZmVjdDFfZHJvcFNoYWRvd18xMzg0XzIwNCIgcmVzdWx0PSJzaGFwZSIvPgo8L2ZpbHRlcj4KPGZpbHRlciBpZD0iZmlsdGVyMV9kXzEzODRfMjA0IiB4PSI4MyIgeT0iNzMiIHdpZHRoPSIyMzUiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXIyX2RfMTM4NF8yMDQiIHg9IjU3IiB5PSIxMDciIHdpZHRoPSIyODYiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXIzX2RfMTM4NF8yMDQiIHg9IjQ0IiB5PSIxNDIiIHdpZHRoPSIzMTMiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI0X2RfMTM4NF8yMDQiIHg9IjQwIiB5PSIxNzYiIHdpZHRoPSIzMjEiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI1X2RfMTM4NF8yMDQiIHg9IjQ0IiB5PSIyMTEiIHdpZHRoPSIzMTMiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI2X2RfMTM4NF8yMDQiIHg9IjU3IiB5PSIyNDUiIHdpZHRoPSIyODYiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI3X2RfMTM4NF8yMDQiIHg9IjgzIiB5PSIyODAiIHdpZHRoPSIyMzUiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI4X2RfMTM4NF8yMDQiIHg9IjEzMiIgeT0iMzE0IiB3aWR0aD0iMTM3IiBoZWlnaHQ9IjE5IiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ii8+CjxmZUNvbG9yTWF0cml4IGluPSJTb3VyY2VBbHBoYSIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDEyNyAwIiByZXN1bHQ9ImhhcmRBbHBoYSIvPgo8ZmVPZmZzZXQgZHk9IjIiLz4KPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMiIvPgo8ZmVDb21wb3NpdGUgaW4yPSJoYXJkQWxwaGEiIG9wZXJhdG9yPSJvdXQiLz4KPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAuMjUgMCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9ImVmZmVjdDFfZHJvcFNoYWRvd18xMzg0XzIwNCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImVmZmVjdDFfZHJvcFNoYWRvd18xMzg0XzIwNCIgcmVzdWx0PSJzaGFwZSIvPgo8L2ZpbHRlcj4KPC9kZWZzPgo8L3N2Zz4K");mask-image:url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzkzIiBoZWlnaHQ9IjM2NyIgdmlld0JveD0iMCAwIDM5MyAzNjciIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIwX2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTI2NSA0Ni41TDE0MS41OTMgNDFDMTM3Ljg2NCA0MSAxMzYgNDIuODMzMyAxMzYgNDYuNUMxMzYgNTAuMTY2NyAxMzcuODY0IDUyIDE0MS41OTMgNTJMMjY1IDQ2LjVaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIxX2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTMxNCA4MC41TDkyLjU2MDUgNzVDODguODUzNSA3NSA4NyA3Ni44MzMzIDg3IDgwLjVDODcgODQuMTY2NyA4OC44NTM1IDg2IDkyLjU2MDUgODZMMzE0IDgwLjVaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIyX2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTMzOSAxMTQuNUw2Ni41NjUyIDEwOUM2Mi44NTUxIDEwOSA2MSAxMTAuODMzIDYxIDExNC41QzYxIDExOC4xNjcgNjIuODU1MSAxMjAgNjYuNTY1MiAxMjBMMzM5IDExNC41WiIgZmlsbD0id2hpdGUiLz4KPC9nPgo8ZyBmaWx0ZXI9InVybCgjZmlsdGVyM19kXzEzODRfMjA0KSI+CjxwYXRoIGQ9Ik0zNTMgMTQ5LjVMNTMuNTcxNyAxNDRDNDkuODU3MiAxNDQgNDggMTQ1LjgzMyA0OCAxNDkuNUM0OCAxNTMuMTY3IDQ5Ljg1NzIgMTU1IDUzLjU3MTcgMTU1TDM1MyAxNDkuNVoiIGZpbGw9IndoaXRlIi8+CjwvZz4KPGcgZmlsdGVyPSJ1cmwoI2ZpbHRlcjRfZF8xMzg0XzIwNCkiPgo8cGF0aCBkPSJNMzU3IDE4My41TDQ5LjU2NDcgMTc4QzQ1Ljg1NDkgMTc4IDQ0IDE3OS44MzMgNDQgMTgzLjVDNDQgMTg3LjE2NyA0NS44NTQ5IDE4OSA0OS41NjQ3IDE4OUwzNTcgMTgzLjVaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXI1X2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTM1MyAyMTguNUw1My41NzE3IDIxM0M0OS44NTcyIDIxMyA0OCAyMTQuODMzIDQ4IDIxOC41QzQ4IDIyMi4xNjcgNDkuODU3MiAyMjQgNTMuNTcxNyAyMjRMMzUzIDIxOC41WiIgZmlsbD0id2hpdGUiLz4KPC9nPgo8ZyBmaWx0ZXI9InVybCgjZmlsdGVyNl9kXzEzODRfMjA0KSI+CjxwYXRoIGQ9Ik0zMzkgMjUyLjVMNjYuNTY1MiAyNDdDNjIuODU1MSAyNDcgNjEgMjQ4LjgzMyA2MSAyNTIuNUM2MSAyNTYuMTY3IDYyLjg1NTEgMjU4IDY2LjU2NTIgMjU4TDMzOSAyNTIuNVoiIGZpbGw9IndoaXRlIi8+CjwvZz4KPGcgZmlsdGVyPSJ1cmwoI2ZpbHRlcjdfZF8xMzg0XzIwNCkiPgo8cGF0aCBkPSJNMzE0IDI4Ny41TDkyLjU2MDUgMjgyQzg4Ljg1MzUgMjgyIDg3IDI4My44MzMgODcgMjg3LjVDODcgMjkxLjE2NyA4OC44NTM1IDI5MyA5Mi41NjA1IDI5M0wzMTQgMjg3LjVaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXI4X2RfMTM4NF8yMDQpIj4KPHBhdGggZD0iTTI2NSAzMjEuNUwxNDEuNTkzIDMxNkMxMzcuODY0IDMxNiAxMzYgMzE3LjgzMyAxMzYgMzIxLjVDMTM2IDMyNS4xNjcgMTM3Ljg2NCAzMjcgMTQxLjU5MyAzMjdMMjY1IDMyMS41WiIgZmlsbD0id2hpdGUiLz4KPC9nPgo8ZGVmcz4KPGZpbHRlciBpZD0iZmlsdGVyMF9kXzEzODRfMjA0IiB4PSIxMzIiIHk9IjM5IiB3aWR0aD0iMTM3IiBoZWlnaHQ9IjE5IiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ii8+CjxmZUNvbG9yTWF0cml4IGluPSJTb3VyY2VBbHBoYSIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDEyNyAwIiByZXN1bHQ9ImhhcmRBbHBoYSIvPgo8ZmVPZmZzZXQgZHk9IjIiLz4KPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMiIvPgo8ZmVDb21wb3NpdGUgaW4yPSJoYXJkQWxwaGEiIG9wZXJhdG9yPSJvdXQiLz4KPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAuMjUgMCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9ImVmZmVjdDFfZHJvcFNoYWRvd18xMzg0XzIwNCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImVmZmVjdDFfZHJvcFNoYWRvd18xMzg0XzIwNCIgcmVzdWx0PSJzaGFwZSIvPgo8L2ZpbHRlcj4KPGZpbHRlciBpZD0iZmlsdGVyMV9kXzEzODRfMjA0IiB4PSI4MyIgeT0iNzMiIHdpZHRoPSIyMzUiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXIyX2RfMTM4NF8yMDQiIHg9IjU3IiB5PSIxMDciIHdpZHRoPSIyODYiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXIzX2RfMTM4NF8yMDQiIHg9IjQ0IiB5PSIxNDIiIHdpZHRoPSIzMTMiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI0X2RfMTM4NF8yMDQiIHg9IjQwIiB5PSIxNzYiIHdpZHRoPSIzMjEiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI1X2RfMTM4NF8yMDQiIHg9IjQ0IiB5PSIyMTEiIHdpZHRoPSIzMTMiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI2X2RfMTM4NF8yMDQiIHg9IjU3IiB5PSIyNDUiIHdpZHRoPSIyODYiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI3X2RfMTM4NF8yMDQiIHg9IjgzIiB5PSIyODAiIHdpZHRoPSIyMzUiIGhlaWdodD0iMTkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeT0iMiIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9Im91dCIvPgo8ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMC4yNSAwIi8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iZWZmZWN0MV9kcm9wU2hhZG93XzEzODRfMjA0IiByZXN1bHQ9InNoYXBlIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXI4X2RfMTM4NF8yMDQiIHg9IjEzMiIgeT0iMzE0IiB3aWR0aD0iMTM3IiBoZWlnaHQ9IjE5IiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ii8+CjxmZUNvbG9yTWF0cml4IGluPSJTb3VyY2VBbHBoYSIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDEyNyAwIiByZXN1bHQ9ImhhcmRBbHBoYSIvPgo8ZmVPZmZzZXQgZHk9IjIiLz4KPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMiIvPgo8ZmVDb21wb3NpdGUgaW4yPSJoYXJkQWxwaGEiIG9wZXJhdG9yPSJvdXQiLz4KPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAuMjUgMCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9ImVmZmVjdDFfZHJvcFNoYWRvd18xMzg0XzIwNCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9ImVmZmVjdDFfZHJvcFNoYWRvd18xMzg0XzIwNCIgcmVzdWx0PSJzaGFwZSIvPgo8L2ZpbHRlcj4KPC9kZWZzPgo8L3N2Zz4K");
+  -webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-position:center;mask-position:center}
+/* окно в матовом стекле над «AKSYSTEMS»: дерево фона видно ЧЁТКО (без блюра) */
+.work.sol[data-product="aksystems"] .panel::before{
+  -webkit-mask-image:radial-gradient(ellipse 260px 210px at 80% 15%, transparent 0%, transparent 44%, #000 80%);
+          mask-image:radial-gradient(ellipse 260px 210px at 80% 15%, transparent 0%, transparent 44%, #000 80%)}
+
+.whead{display:flex;align-items:center;gap:18px}
+.whead .sect{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--mist);
+  opacity:.85;font-weight:600;padding-left:18px;border-left:1px solid rgba(255,255,255,.28)}
+.hblock{margin-top:2px}
+.work .h2{font-size:30px;font-weight:800;letter-spacing:-.01em;color:#fff;line-height:1.05}
+.work .sub{margin-top:5px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);opacity:.8}
+.claim{margin-top:10px;font-size:14.5px;line-height:1.4;font-weight:600;color:#fff;max-width:95%}
+.claim .neq{color:var(--mist);font-weight:800;font-size:19px;margin-right:7px}
+.claim em{font-style:normal;font-weight:800;color:#fff;letter-spacing:.02em}
+
+.rows{margin-top:12px;display:flex;flex-direction:column;max-width:97%}
+.r{display:grid;grid-template-columns:42px 1fr;gap:16px;padding:9px 0;
+  border-top:1px solid rgba(255,255,255,.16);align-items:start}
+.r:first-child{border-top:0}
+.r .n{font-size:15px;font-weight:800;color:#fff;opacity:.9;padding-top:1px}
+.r p{font-size:12.8px;line-height:1.4;color:#eaf2fb}
+
+.whorow{margin-top:auto;padding-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.whorow .wl{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--mist);opacity:.85;margin-right:4px}
+.chip{font-size:12px;padding:6px 13px;border-radius:999px;background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.34);color:#fff}
+
+/* декоративный вертикальный слайдер справа (как в GORNEE TYR) */
+.vslider{position:absolute;right:40px;top:50%;transform:translateY(-50%);z-index:3;
+  display:flex;flex-direction:column;align-items:center;gap:14px;color:rgba(255,255,255,.7)}
+.vslider b{font-size:15px}
+.vslider i{font-style:normal;font-size:13px;border:1px solid rgba(255,255,255,.4);
+  border-radius:5px;padding:4px 5px}
+
+/* НАВИГАЦИЯ (стрелки ◄ ► справа снизу, как в GORNEE TYR) */
+#nav{position:fixed;right:30px;bottom:18px;display:flex;gap:12px;align-items:center;z-index:60}
+#nav button{width:46px;height:38px;border-radius:8px;border:1px solid rgba(255,255,255,.4);
+  background:rgba(10,22,34,.55);color:#fff;font-size:15px;cursor:pointer;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:background .15s}
+#nav button:hover{background:rgba(37,65,84,.85)}
+#counter{font-size:12px;letter-spacing:.12em;color:#fff;min-width:58px;text-align:center;
+  background:rgba(10,22,34,.5);padding:9px 8px;border-radius:8px}
+</style>
+</head>
+<body>
+  <div id="viewport"><div id="stage">
+  <!-- 1. ГЛАВНАЯ — AKSYSTEMS (стиль ICELAND, mode=problems) -->
+  <section class="slide cover pc" data-product="aksystems">
+    <!-- заголовок ПОД панелью: backdrop-filter панели размывает его левую часть (разрез краем стекла) -->
+    <h1 class="htitle">AKSYSTEMS</h1>
+    <!-- крупный полупрозрачный знак-watermark (по умолчанию AK.CO, можно переопределить полем wm) -->
+    <img class="wm" src="assets/logos/akco-mark.svg" alt="">
+    <nav class="topnav"><span class="navi on">AKSYSTEMS</span><a class="navi" href="aksense.html">AKSENSE</a><a class="navi" href="akstream.html">AKSTREAM</a><a class="navi" href="smartsys.html">SMARTSYS</a><a class="navi" href="akgrid.html">AK.GRID</a></nav>
+    <div class="panel">
+      <div class="coverphoto" aria-hidden="true"></div>
+      <div class="pad">
+        <div class="topbar"><div class="brand solo"><img class="wd" src="assets/logos/aksystems-word.svg" alt="AKSYSTEMS"></div></div>
+        <div class="lower">
+          <div class="row01">
+            <div class="idx"><span class="pg">01</span><div class="dots"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div></div>
+            <div class="htext"><div class="ch">Техническое перевооружение производства</div>
+              <p class="lede">Импортозамещение по ЗИП и узлам — <span class="lede-em">без переобвязки и без санкционных рисков.</span></p></div>
+          </div>
+          <div class="contour"><div class="cl">Контур площадки производителя удобрений</div>
+            <div class="cchips"><span class="cchip">Аммиак</span><span class="cchip">Карбамид</span><span class="cchip">NPK / NPS</span><span class="cchip">Кислоты</span></div></div>
+          <a class="more">ПЕРЕЙТИ К РЕШЕНИЮ<span class="ln"></span><b>&#8594;</b></a>
+        </div>
+      </div>
+      <aside class="probside"><div class="psl">Проблематика</div>
+        <div class="prlist"><div class="pr"><span class="n">01</span><p>Уход вендоров: компрессор Nuovo Pignone стоит<br>на ремонте — сервис ушёл, оригинального ЗИП нет.</p></div><div class="pr"><span class="n">02</span><p>Замена стрипперов карбамида требует полной<br>трубной переобвязки и перезаливки фундамента.</p></div><div class="pr"><span class="n">03</span><p>Парк оборудования разнородный — пять<br>вендоров, запас ЗИП в пять раз больше.</p></div><div class="pr"><span class="n">04</span><p>Срок ремонта срывается: поставщики меняют условия, поставки идут серым импортом с риском контрафакта.</p></div><div class="pr"><span class="n">05</span><p>Импортные аналоги санкционно опасны либо<br>приходят через перекупщиков с тройной наценкой.</p></div></div></aside>
+    </div>
+    <div class="tag">AK.FAMILY · Реконструкция производства · 1 / 3</div>
+    <img class="corner cornerword" src="assets/logos/akco-word.svg" alt="AK.CO">
+  </section>
+  <!-- 2. РЕШЕНИЯ — AKSYSTEMS (стиль GORNEE TYR) -->
+  <section class="slide work sol" data-product="aksystems">
+    <div class="panel">
+      <div class="wmbg" aria-hidden="true"></div>
+      <div class="pad">
+        <div class="whead"><div class="brand solo"><img class="wd" src="assets/logos/aksystems-word.svg" alt="AKSYSTEMS"></div><span class="sect">Решения</span></div>
+        <h2 class="cut2"><span class="on">AKSYS</span><span class="off">TEMS</span></h2>
+        <div class="weyebrow">Реконструкция производства</div>
+        <div class="hblock"><div class="h2">Решения</div><div class="sub">Видение и подходы AKCO к устранению проблем</div></div>
+        
+        <div class="rows"><div class="r"><span class="n">01</span><p>Прямой подбор аналогов в КНР с прямыми договорами с заводами.<br>Отказ от посредников, одно окно с приёмочным контролем.</p></div><div class="r"><span class="n">02</span><p>Реверс-инжиниринг изношенных узлов: чертёж с оригинала,<br>изготовление по спецификации в КНР с контролем качества.</p></div><div class="r"><span class="n">03</span><p>Полная унификация парка: разнобой вендоров → несколько<br>проверенных производителей с авторизованным сервисом.</p></div><div class="r"><span class="n">04</span><p>Замена узлов без переобвязки — с сохранением<br>посадочных размеров, фланцев и патрубков.</p></div><div class="r"><span class="n">05</span><p>Гарантия и сервис напрямую от изготовителя через агентские соглашения.</p></div></div>
+        <div class="contour"><div class="cl">КОНТУР ПЛОЩАДКИ ПРОИЗВОДСТВА</div><div class="cchips"><span class="cchip">Аммиак</span><span class="cchip">Карбамид</span><span class="cchip">NPK / NPS</span><span class="cchip">Кислоты</span></div></div>
+        <div class="whorow"><span class="wl">Кому это нужно</span><span class="chip">ОГМ</span><span class="chip">Директор по закупкам</span><span class="chip">Главный инженер</span><span class="chip">Главный механик</span></div>
+      </div>
+      <div class="vslider"><b>&#8593;</b><i>&#9671;</i><b>&#8595;</b></div>
+    </div>
+    <div class="tag">AK.FAMILY · Реконструкция производства · 2 / 3</div>
+    <img class="corner cornerword" src="assets/logos/akco-word.svg" alt="AK.CO">
+  </section>
+  <!-- 3. ЭКОСИСТЕМА — AKSYSTEMS (Состав / Отличие) -->
+  <section class="slide work eco" data-product="aksystems">
+    <div class="panel">
+      <div class="pad">
+        <div class="whead"><div class="brand solo"><img class="wd" src="assets/logos/aksystems-word.svg" alt="AKSYSTEMS"></div><span class="sect">Экосистема</span></div>
+        <div class="eco-eyebrow">Реконструкция производства</div>
+        <p class="eco-claim"><span class="neq">&ne;</span>Не хаотичные разовые поставки, а полноценная <em>ЭКОСИСТЕМА</em> управления комплектацией производств оборудованием и материалами</p>
+        <div class="eco-cols">
+          <div class="eco-card"><h4>Что внутри · Состав</h4><ul><li>База проверенных производителей КНР по основным группам технологического оборудования, КИП, арматура, оснастка, электрооборудование.</li><li>Профессиональные инженерные ресурсы в Российской Федерации, привлечение узких специалистов в Китае по зарубежным продуктам.</li><li>Сквозной контроль качества на всём цикле: чертёж — заготовка — обработка — сборка — приёмка.</li><li>Долгосрочные агентские соглашения с производителями — стабильные цены, приоритетная очередь, прямые гарантии.</li><li>Несколько источников поставки по одной позиции — конкурс, страховка от перебоев поставок.</li></ul></div>
+          <div class="eco-card"><h4>Чем отличается · Отличие</h4><ul><li>Не серый импорт через прокладки, а прямые договоры с заводами и максимально прозрачная цепочка.</li><li>Реверс-инжиниринг: снятие размеров, материаловедение, изготовление по спецификации с контролем на каждом этапе.</li><li>Приёмочный контроль и инспекции на заводе-изготовителе — нашим квалифицированным инженером, а не «по фото».</li><li>Унификация стандартных технических средств даёт двойной эффект: ниже стоимость ЗИП и проще обучение персонала.</li><li>Минимизация санкционных рисков на каждом этапе — без западной номенклатуры и критически важных комплектующих, которые не достать в текущих условиях.</li><li>Отлаженная сеть сервисного обслуживания в РФ AK.COwork.</li></ul></div>
+        </div>
+        <div class="eco-logo" aria-hidden="true"></div>
+      </div>
+    </div>
+    <div class="tag">AK.FAMILY · Реконструкция производства · 3 / 3</div>
+    <img class="corner cornerword" src="assets/logos/akco-word.svg" alt="AK.CO">
+  </section>
+  </div></div>
+  <nav id="nav">
+    <button id="prev" aria-label="Назад">&#9664;</button>
+    <span id="counter">1 / 3</span>
+    <button id="next" aria-label="Вперёд">&#9654;</button>
+  </nav>
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let cur=0;const counter=document.getElementById('counter');
+function show(i){cur=(i+slides.length)%slides.length;
+  slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  counter.textContent=(cur+1)+' / '+slides.length;}
+function next(){show(cur+1)}function prev(){show(cur-1)}
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();next()}
+  if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();prev()}
+  if(e.key==='Home')show(0);if(e.key==='End')show(slides.length-1)});
+document.getElementById('prev').onclick=prev;document.getElementById('next').onclick=next;
+const stage=document.getElementById('stage');
+function fit(){const s=Math.min(window.innerWidth/1280,window.innerHeight/720);
+  stage.style.transform='scale('+s+')'}
+window.addEventListener('resize',fit);fit();show(0);
+</script>
+</body>
+</html>
