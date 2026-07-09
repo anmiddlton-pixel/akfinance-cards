@@ -99,8 +99,8 @@ nav.sc{background:rgba(24,24,24,.92);backdrop-filter:blur(20px);box-shadow:0 1px
 }
 
 /* Контент поверх фото (без панели) */
-.hov{position:absolute;inset:0;background:linear-gradient(105deg,rgba(16,16,16,.72) 0%,rgba(16,16,16,.35) 55%,rgba(16,16,16,.08) 100%);pointer-events:none}
-.hov::after{content:'';position:absolute;bottom:0;left:0;right:0;height:220px;background:linear-gradient(to top,#1b1b1b 0%,transparent 100%)}
+.hov{position:absolute;inset:0;background:linear-gradient(105deg,rgba(16,16,16,.5) 0%,rgba(16,16,16,.2) 55%,transparent 100%);pointer-events:none}
+.hov::after{content:'';position:absolute;bottom:0;left:0;right:0;height:150px;background:linear-gradient(to top,rgba(27,27,27,.65) 0%,transparent 100%)}
 .hc{position:absolute;z-index:2;left:72px;top:50%;transform:translateY(-50%);max-width:600px}
 @media(max-width:900px){.hc{left:24px;right:24px;top:104px;bottom:auto;transform:none;max-width:none}}
 
@@ -182,17 +182,17 @@ nav.sc{background:rgba(24,24,24,.92);backdrop-filter:blur(20px);box-shadow:0 1px
 /* SPLIT SECTIONS */
 .sp{position:relative;min-height:520px;overflow:hidden;display:flex;align-items:stretch}
 .sp-bg{position:absolute;inset:-16% 0;background-size:cover;background-position:center;will-change:transform}
-.sp-ov{position:absolute;inset:0;background:transparent}
+.sp-ov{position:absolute;inset:0;background:rgba(10,12,14,0)}
 .sp-panel{position:relative;z-index:2;width:50%;padding:72px 64px;
   background:rgba(40,40,40,0.2);
   backdrop-filter:blur(24px) saturate(105%) brightness(1.12);
   -webkit-backdrop-filter:blur(24px) saturate(105%) brightness(1.12);
   border-right:1px solid rgba(255,255,255,0.12);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.1);
-  border-radius:28px;
+  border-radius:0 28px 28px 0;
   display:flex;flex-direction:column;justify-content:center}
 .sp.flip{flex-direction:row-reverse}
-.sp.flip .sp-panel{border-right:none;border-left:1px solid var(--border)}
+.sp.flip .sp-panel{border-right:none;border-left:1px solid var(--border);border-radius:28px 0 0 28px}
 .sp-feats{display:flex;flex-direction:column;gap:10px;margin:20px 0 28px}
 .sp-feat{display:flex;align-items:flex-start;gap:11px;font-size:13px;color:var(--muted);line-height:1.55}
 .fd{width:6px;height:6px;background:var(--teal);border-radius:50%;flex-shrink:0;margin-top:6px}
@@ -225,17 +225,17 @@ nav.sc{background:rgba(24,24,24,.92);backdrop-filter:blur(20px);box-shadow:0 1px
 .ccgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 @media(max-width:900px){.ccgrid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:580px){.ccgrid{grid-template-columns:1fr}}
-.cc{border-radius:var(--rl);overflow:hidden;border:1px solid var(--border);background:var(--glass);transition:box-shadow .28s,transform .28s,border-color .28s}
+.cc{border-radius:var(--rl);overflow:hidden;border:1px solid var(--border);background:var(--glass);transition:box-shadow .28s,transform .28s,border-color .28s;display:flex;flex-direction:column}
 .cc:hover{box-shadow:0 8px 40px rgba(78,78,78,.1);transform:translateY(-4px);border-color:var(--border2)}
 .cth{height:188px;position:relative;overflow:hidden}
 .cthi{position:absolute;inset:-8%;background-size:cover;background-position:center;transition:transform .55s ease}
 .cc:hover .cthi{transform:scale(1.05)}
 .ctho{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(9,9,9,.65) 100%)}
 .cgeo{position:absolute;top:12px;left:12px;background:rgba(98,98,98,.75);color:#fff;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:6px;backdrop-filter:blur(8px)}
-.cbody{padding:20px 22px 22px}
+.cbody{padding:20px 22px 22px;flex:1;display:flex;flex-direction:column}
 .cbody h3{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:7px;line-height:1.4}
 .cbody p{font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:13px}
-.cres{display:flex;align-items:flex-start;gap:8px;font-size:12px;font-weight:600;color:var(--teal);background:rgba(78,78,78,.07);padding:9px 12px;border-radius:8px;border:1px solid var(--border)}
+.cres{display:flex;align-items:flex-start;gap:8px;font-size:12px;font-weight:600;color:var(--teal);background:rgba(78,78,78,.07);padding:9px 12px;border-radius:8px;border:1px solid var(--border);margin-top:auto}
 .cres::before{content:'✓';width:16px;height:16px;background:var(--teal2);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0;margin-top:1px}
 
 /* ABOUT */
@@ -254,13 +254,24 @@ nav.sc{background:rgba(24,24,24,.92);backdrop-filter:blur(20px);box-shadow:0 1px
 .entity span a{color:inherit;transition:color .2s}
 .entity span a:hover{color:var(--teal)}
 .aboutsec .entity{background:rgba(47,47,47,.7)}
+.aboutsec .entity{position:relative}
+a.entity{cursor:pointer;transition:transform .22s,border-color .22s,box-shadow .22s,background .22s}
+a.entity::after{content:"↗";position:absolute;top:14px;right:15px;font-size:14px;font-weight:700;line-height:1;color:var(--teal);opacity:.5;transition:opacity .22s,transform .22s}
+a.entity b{padding-right:18px}
+a.entity:hover{transform:translateY(-3px);border-color:var(--teal);box-shadow:0 10px 30px rgba(0,0,0,.45)}
+a.entity:hover::after{opacity:1;transform:translate(2px,-2px)}
+a.entity:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 .aboutsec .entity b{color:#fff}
 .aboutsec .entity span{color:rgba(255,255,255,.6)}
 
 /* CONTACTS GRID */
-.cgrid4{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.cgrid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:24px}
 @media(max-width:900px){.cgrid4{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:580px){.cgrid4{grid-template-columns:1fr}}
+.cgrid4 .entity{padding:22px 20px;transition:transform .22s,border-color .22s,box-shadow .22s}
+.cgrid4 .entity b{font-size:16px;margin-bottom:7px}
+.cgrid4 .entity span{font-size:13.5px;line-height:1.5}
+.cgrid4 .entity:hover{transform:translateY(-3px);border-color:var(--border2);box-shadow:0 10px 30px rgba(0,0,0,.35)}
 
 /* CTA */
 .ctaw{background:var(--bg3);padding:80px 56px}
@@ -356,10 +367,10 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:56px 56p
 <section id="hero" class="hero">
   <!-- Фон: видео hero с бесшовным кроссфейд-циклом (два наложенных видео) -->
   <div class="hbg" id="hbg">
-    <video class="hbg-vid" id="hbgA" muted playsinline poster="assets/img/streams-electric.PNG" style="opacity:1">
+    <video class="hbg-vid" id="hbgA" muted playsinline autoplay preload="auto" poster="assets/img/streams-electric.PNG" style="opacity:1">
       <source src="assets/video/hero-dark.mp4" type="video/mp4">
     </video>
-    <video class="hbg-vid" id="hbgB" muted playsinline>
+    <video class="hbg-vid" id="hbgB" muted playsinline preload="auto">
       <source src="assets/video/hero-dark.mp4" type="video/mp4">
     </video>
   </div>
@@ -405,7 +416,6 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:56px 56p
     </a>
   </div>
 </section>
-
 
 <!-- АВТОМАТИЗАЦИЯ И AI -->
 <section id="software" class="sp">
@@ -528,18 +538,18 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:56px 56p
 
 <!-- О КОНЦЕРНЕ -->
 <section id="about" class="aboutsec">
-  <div class="about-bg" style="background-image:url('assets/img/hero.PNG')"></div>
+  <div class="about-bg" style="background-image:url('assets/img/aksystems.PNG')"></div>
   <div class="about-ov"></div>
   <div class="about-inner">
     <div class="ew rv"><div class="ewl"></div><span>About the group</span></div>
     <h2 class="st rv d1">About the<br><strong>AKCO™ Group</strong></h2>
     <p class="sd rv d2">AKCO™ is an engineering group with 25 years of I&C history at oil & gas facilities. Five legal entities across Russia, the UAE and China.</p>
     <div class="egrid">
-      <div class="entity rv"><b>AKSYSTEMS LLC</b><span>Moscow, Russia</span></div>
-      <div class="entity rv d1"><b>AKSTREAM LLC</b><span>Kazan, Russia</span></div>
-      <div class="entity rv d2"><b>SMART SYSTEMS FZCO</b><span>Dubai, UAE</span></div>
-      <div class="entity rv d2"><b>AKFINANCE ADVISORY SERVICES</b><span>Dubai, UAE</span></div>
-      <div class="entity rv d3"><b>Shanghai AKSENSE Technology</b><span>Shanghai, China</span></div>
+      <div class="entity rv" style="background-image:linear-gradient(95deg,rgba(24,24,24,.94) 0%,rgba(24,24,24,.72) 52%,rgba(24,24,24,.4) 100%),url('assets/img/entity-aksystems.png');background-size:cover;background-position:center;border-color:var(--border2)"><b>AKSYSTEMS LLC</b><span>Moscow, Russia</span></div>
+      <a class="entity rv d1" href="https://akstream.ru" target="_blank" rel="noopener" style="background-image:linear-gradient(95deg,rgba(24,24,24,.94) 0%,rgba(24,24,24,.72) 52%,rgba(24,24,24,.4) 100%),url('assets/img/entity-akstream.png');background-size:cover;background-position:center;border-color:var(--border2)"><b>AKSTREAM LLC</b><span>Kazan, Russia</span></a>
+      <div class="entity rv d2" style="background-image:linear-gradient(95deg,rgba(24,24,24,.94) 0%,rgba(24,24,24,.72) 52%,rgba(24,24,24,.4) 100%),url('assets/img/entity-smart.jpg');background-size:cover;background-position:center;border-color:var(--border2)"><b>SMART SYSTEMS FZCO</b><span>Dubai, UAE</span></div>
+      <a class="entity rv d2" href="https://akfinance.ae" target="_blank" rel="noopener" style="background-image:linear-gradient(95deg,rgba(24,24,24,.94) 0%,rgba(24,24,24,.72) 52%,rgba(24,24,24,.4) 100%),url('assets/img/entity-akfinance.jpg');background-size:cover;background-position:center;border-color:var(--border2)"><b>AKFINANCE ADVISORY SERVICES</b><span>Dubai, UAE</span></a>
+      <div class="entity rv d3" style="background-image:linear-gradient(95deg,rgba(24,24,24,.94) 0%,rgba(24,24,24,.72) 52%,rgba(24,24,24,.4) 100%),url('assets/img/entity-aksense.jpg');background-size:cover;background-position:center;border-color:var(--border2)"><b>Shanghai AKSENSE Technology</b><span>Shanghai, China</span></div>
     </div>
     <p class="sd rv d3" style="margin-top:24px;font-size:12px;color:rgba(255,255,255,.5)">Group brands: AKCore™ · AKSense™ · AKFlow™ · AK.COwork · AK.Office</p>
   </div>
@@ -551,9 +561,10 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:56px 56p
   <h2 class="st rv d1"><span>Get in touch</span><br><strong>with the Group</strong></h2>
   <p class="sd rv d2" style="max-width:none">International office — Dubai, UAE. We reply within 4 business hours.</p>
   <div class="cgrid4">
-    <div class="entity rv"><b>Phone</b><span><a href="tel:+971569027277">+971 56 902 7277</a></span></div>
+    <div class="entity rv"><b>Phone</b><span><a href="tel:88437177717">8 843 717-77-17</a></span></div>
     <div class="entity rv d1"><b>E-mail</b><span><a href="mailto:info@aksystems.co">info@aksystems.co</a></span></div>
-    <div class="entity rv d2"><b>Office</b><span>Smart Systems FZCO · IFZA Business Park, Dubai, UAE</span></div>
+    <div class="entity rv d2"><b>Telegram</b><span><a href="https://t.me/infoAKCO">@infoAKCO</a></span></div>
+    <div class="entity rv d3"><b>Office</b><span>Smart Systems FZCO · IFZA Business Park, Dubai, UAE</span></div>
   </div>
 </div>
 
@@ -622,8 +633,9 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:56px 56p
     <div class="fcol">
       <h5>Contacts</h5>
       <ul>
-        <li><a href="tel:+971569027277">+971 56 902 7277</a></li>
+        <li><a href="tel:88437177717">8 843 717-77-17</a></li>
         <li><a href="mailto:info@aksystems.co">info@aksystems.co</a></li>
+        <li><a href="https://t.me/infoAKCO">@infoAKCO</a></li>
         <li><a href="#contacts">All contacts</a></li>
       </ul>
     </div>
@@ -631,6 +643,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:56px 56p
   <div class="fb">
     <p>© 2026 AKCO™ · AKCore™ — active Russian registration · Other trademarks — registration in progress</p>
     <div class="fsoc">
+      <a href="https://t.me/infoAKCO" class="fsc">✈</a>
       <a href="mailto:info@aksystems.co" class="fsc">✉</a>
     </div>
   </div>
@@ -657,7 +670,12 @@ window.addEventListener('scroll',function(){nav.classList.toggle('sc',window.scr
   if(!a||!b) return;
   var FADE=1.2; // секунды кроссфейда (совпадает с transition в CSS)
   var cur=a, nxt=b, switching=false;
-  a.play().catch(function(){});
+  // Надёжный старт: autoplay + резервный play() + фолбэк на первый жест (для мобильных)
+  function heroGesture(){ a.play().catch(function(){}); }
+  var pr=a.play();
+  if(pr&&pr.catch){ pr.catch(function(){
+    ['touchstart','click','scroll'].forEach(function(ev){document.addEventListener(ev,heroGesture,{once:true,passive:true});});
+  }); }
   function watch(){
     if(cur.duration && cur.currentTime >= cur.duration - FADE && !switching){
       switching=true;
