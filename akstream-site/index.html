@@ -834,7 +834,7 @@ footer{background:#070b0f;padding:56px 56px 36px;border-top:1px solid var(--bord
       const land=matchMedia('(orientation:landscape) and (max-height:560px)').matches;
       const portrait=matchMedia('(max-width:768px) and (orientation:portrait)').matches;
       if(land){heroScale=1.55;heroShift=4.0;heroY=0;}
-      else if(portrait){heroScale=0.72;heroShift=0;heroY=-1.7;}   // шар целиком (круглый) в нижней части, по центру; текст сверху
+      else if(portrait){heroScale=1.3;heroShift=0;heroY=-3.7;}   // крупный шар внизу, видна верхняя половина (купол); текст сверху не перекрывает
       else{heroScale=1;heroShift=2.4;heroY=0;}
       if(typeof pMat!=='undefined'){pMat.uniforms.uPR.value=renderer.getPixelRatio();
         pMat.uniforms.uSize.value=0.34/Math.sqrt(heroScale);}   // компенсируем масштаб — цифры не укрупняются при большом шаре
