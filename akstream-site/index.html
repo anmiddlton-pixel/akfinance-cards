@@ -65,6 +65,11 @@ nav.sc{background:rgba(8,12,16,.9);backdrop-filter:blur(18px);-webkit-backdrop-f
 .hpanel{height:100svh;display:flex;align-items:center;padding:0 48px;pointer-events:none}
 .hpanel .inner{max-width:46ch;margin-left:clamp(0px,4vw,72px);transition:opacity .35s ease,transform .35s ease}
 .akc-hero{font-weight:600}
+#hero-lead{opacity:0;transform:translateY(16px);transition:opacity .8s ease,transform .8s cubic-bezier(.22,.61,.36,1)}
+#hero-lead.on{opacity:1;transform:none}
+.hcta.hero-cta{opacity:0;transition:opacity .7s ease,transform .2s,box-shadow .2s}
+.hcta.hero-cta.on{opacity:1}
+@media(prefers-reduced-motion:reduce){#hero-lead,.hcta.hero-cta{opacity:1!important;transform:none!important;transition:none!important}}
 #hero-type .tw-ch{display:inline;opacity:0;transition:opacity .04s linear}
 #hero-type .tw-nw{display:inline;white-space:nowrap}
 #hero-type .tw-ch.on{opacity:1}
@@ -376,8 +381,8 @@ footer{background:#070b0f;padding:56px 56px 36px;border-top:1px solid var(--bord
   <div class="hero-act" id="top">
     <section class="hpanel"><div class="inner"><p class="eyebrow">Интеллектуальные экосистемы</p>
       <h1><img src="assets/logos/akstream-word.svg" alt="АКСТРИМ" class="hero-logo"><strong id="hero-type">инжиниринговая <span style="white-space:nowrap">ИТ-компания</span></strong></h1>
-      <p><strong>ООО «АКСТРИМ»</strong> — поставщик решений (Solution&nbsp;Provider) для программного слоя и инженерных сервисов. Генеральный проектировщик по дисциплинам <span style="white-space:nowrap">автоматизации, разработчик</span> <span style="white-space:nowrap">линейки <strong class="akc-hero">AKCore™</strong></span>.</p>
-      <a class="hcta" href="#contacts">Обсудить проект</a></div></section>
+      <p id="hero-lead"><strong>ООО «АКСТРИМ»</strong> — поставщик решений (Solution&nbsp;Provider) для программного слоя и инженерных сервисов. Генеральный проектировщик по дисциплинам <span style="white-space:nowrap">автоматизации, разработчик</span> <span style="white-space:nowrap">линейки <strong class="akc-hero">AKCore™</strong></span>.</p>
+      <a class="hcta hero-cta" href="#contacts">Обсудить проект</a></div></section>
   </div>
   <div class="hint" id="hint">Скролл ↓</div>
   <div class="readout" id="readout">AKCORE.AI <span class="dot"></span> <b>ONLINE</b><br>NODES <b>5000</b> · IT+OT<br>KAZAN <span class="amb">55.79 / 49.12</span></div>
@@ -1004,6 +1009,8 @@ footer{background:#070b0f;padding:56px 56px 36px;border-top:1px solid var(--bord
     const el=document.getElementById('hero-type');if(!el)return;
     const full='инжиниринговая ИТ-компания', nwFrom=full.indexOf('ИТ-компания');
     const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const lead=document.getElementById('hero-lead'), cta=document.querySelector('.hero-cta');
+    function revealLead(){ if(lead)lead.classList.add('on'); if(cta)setTimeout(()=>cta.classList.add('on'),240); }
     el.textContent='';
     const chars=[]; let nwWrap=null;
     for(let i=0;i<full.length;i++){
@@ -1012,12 +1019,13 @@ footer{background:#070b0f;padding:56px 56px 36px;border-top:1px solid var(--bord
       else el.appendChild(s);
       chars.push(s);
     }
-    if(reduce){chars.forEach(s=>s.classList.add('on'));return;}
+    if(reduce){chars.forEach(s=>s.classList.add('on'));revealLead();return;}
     let i=0;
     function tick(){
       chars[i].classList.add('on');
       i++;
       if(i<chars.length)setTimeout(tick,62);
+      else setTimeout(revealLead,180);
     }
     setTimeout(tick,320);
   })();
