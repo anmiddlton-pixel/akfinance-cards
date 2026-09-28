@@ -1010,7 +1010,7 @@ footer{background:#070b0f;padding:56px 56px 36px;border-top:1px solid var(--bord
     const full='инжиниринговая ИТ-компания', nwFrom=full.indexOf('ИТ-компания');
     const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
     const lead=document.getElementById('hero-lead'), cta=document.querySelector('.hero-cta');
-    function revealLead(){ if(lead)lead.classList.add('on'); if(cta)setTimeout(()=>cta.classList.add('on'),240); }
+    function revealLead(){ if(lead)lead.classList.add('on'); if(cta)setTimeout(()=>cta.classList.add('on'),120); }
     el.textContent='';
     const chars=[]; let nwWrap=null;
     for(let i=0;i<full.length;i++){
@@ -1025,9 +1025,8 @@ footer{background:#070b0f;padding:56px 56px 36px;border-top:1px solid var(--bord
       chars[i].classList.add('on');
       i++;
       if(i<chars.length)setTimeout(tick,62);
-      else setTimeout(revealLead,180);
     }
-    setTimeout(tick,320);
+    setTimeout(()=>{revealLead();tick();},320);
   })();
 
   /* ===== ФИНАЛ: фон-код — цифры парят как снежинки ===== */
