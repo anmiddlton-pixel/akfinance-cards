@@ -1037,7 +1037,7 @@ footer{background:#070b0f;padding:56px 56px 36px;border-top:1px solid var(--bord
     const dm=document.getElementById('role');
     function fade(){const top=dm?dm.getBoundingClientRect().top+scrollY:1e9,start=top-innerHeight*0.6;
       const k=Math.min(1,Math.max(0,(scrollY-start)/(innerHeight*0.5)));
-      c.style.opacity=(k*0.083).toFixed(3);
+      c.style.opacity=(k*0.095).toFixed(3);
       if(k>0){if(reduce){drawStatic();}else if(!raf){last=0;raf=requestAnimationFrame(frame);}}else if(raf){cancelAnimationFrame(raf);raf=0;g.clearRect(0,0,W,H);}}
     addEventListener('scroll',fade,{passive:true});addEventListener('resize',fade);fade();
   })();
