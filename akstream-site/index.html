@@ -86,10 +86,12 @@ nav.sc{background:rgba(8,12,16,.9);backdrop-filter:blur(18px);-webkit-backdrop-f
 @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,6px)}}
 /* HERO адаптив: мобильный портрет + планшет */
 @media(max-width:768px){
-  .hpanel{padding:13vh 22px 0;position:relative;align-items:flex-start}
+  .hpanel{padding:7vh 22px 0;position:relative;align-items:flex-start}
   .hpanel::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(7,11,15,.78) 0%,rgba(7,11,15,.58) 40%,rgba(7,11,15,.16) 64%,transparent 82%)}
   .hpanel .inner{margin-left:0;max-width:100%}
-  .hpanel p{max-width:100%}
+  .hpanel h1,.hpanel h2{font-size:clamp(30px,8vw,42px)}
+  .hpanel p{max-width:100%;font-size:clamp(.94rem,4vw,1.12rem);line-height:1.42;margin-top:1.05rem}
+  .hcta{margin-top:1.4rem}
 }
 /* HERO адаптив: телефон в ландшафте (низкая высота) — текст левее, компактнее */
 @media(orientation:landscape) and (max-height:560px){
@@ -832,7 +834,7 @@ footer{background:#070b0f;padding:56px 56px 36px;border-top:1px solid var(--bord
       const land=matchMedia('(orientation:landscape) and (max-height:560px)').matches;
       const portrait=matchMedia('(max-width:768px) and (orientation:portrait)').matches;
       if(land){heroScale=1.55;heroShift=4.0;heroY=0;}
-      else if(portrait){heroScale=1.0;heroShift=0.2;heroY=-3.8;}   // шар опущен вниз, текст сверху на чистом фоне
+      else if(portrait){heroScale=0.72;heroShift=0;heroY=-1.7;}   // шар целиком (круглый) в нижней части, по центру; текст сверху
       else{heroScale=1;heroShift=2.4;heroY=0;}
       if(typeof pMat!=='undefined'){pMat.uniforms.uPR.value=renderer.getPixelRatio();
         pMat.uniforms.uSize.value=0.34/Math.sqrt(heroScale);}   // компенсируем масштаб — цифры не укрупняются при большом шаре
