@@ -65,9 +65,12 @@ nav.sc{background:rgba(8,12,16,.9);backdrop-filter:blur(18px);-webkit-backdrop-f
 .hpanel{height:100svh;display:flex;align-items:center;padding:0 48px;pointer-events:none}
 .hpanel .inner{max-width:46ch;margin-left:clamp(0px,4vw,72px);transition:opacity .35s ease,transform .35s ease}
 .akc-hero{font-weight:600}
-#hero-type .tw-caret{display:inline-block;width:.06em;height:.82em;margin-left:.05em;background:var(--acc);vertical-align:-.06em;border-radius:1px;animation:twcar .85s step-end infinite}
+#hero-type .tw-ch{display:inline;opacity:0;transition:opacity .04s linear}
+#hero-type .tw-nw{display:inline;white-space:nowrap}
+#hero-type .tw-ch.on{opacity:1}
+#hero-type .tw-ch.cur{position:relative}
+#hero-type .tw-ch.cur::after{content:"";position:absolute;top:.12em;right:-.1em;width:.06em;height:.78em;background:var(--acc);border-radius:1px;animation:twcar .85s step-end infinite}
 @keyframes twcar{50%{opacity:0}}
-@media(prefers-reduced-motion:reduce){#hero-type .tw-caret{display:none}}
 .eyebrow{font-weight:700;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);margin:0 0 1.1rem;display:flex;align-items:center;gap:12px}
 .eyebrow::before{content:"";width:26px;height:1.5px;background:var(--amber)}
 .hpanel h1,.hpanel h2{font-family:var(--body);font-weight:200;font-size:clamp(34px,5.6vw,74px);line-height:1.04;letter-spacing:-.02em;margin:0;color:#fff}
@@ -999,20 +1002,30 @@ footer{background:#070b0f;padding:56px 56px 36px;border-top:1px solid var(--bord
     new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){if(!raf)frame();}else if(raf){cancelAnimationFrame(raf);raf=0;}});},{threshold:.02}).observe(fc);
   })();
 
-  /* ===== ГЕРОЙ: заголовок печатается ===== */
+  /* ===== ГЕРОЙ: заголовок печатается (буквы уже на местах, просто проявляются — верстка не прыгает) ===== */
   (function(){
     const el=document.getElementById('hero-type');if(!el)return;
-    const full='инжиниринговая ИТ-компания', nw=full.indexOf('ИТ-компания');
+    const full='инжиниринговая ИТ-компания', nwFrom=full.indexOf('ИТ-компания');
     const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-    function render(n){
-      const head=full.slice(0,Math.min(n,nw));
-      const tail=n>nw?full.slice(nw,n):'';
-      el.innerHTML=head+(tail?'<span style="white-space:nowrap">'+tail+'</span>':'')+'<span class="tw-caret"></span>';
+    el.textContent='';
+    const chars=[]; let nwWrap=null;
+    for(let i=0;i<full.length;i++){
+      const s=document.createElement('span'); s.className='tw-ch'; s.textContent=full[i];
+      if(i>=nwFrom){ if(!nwWrap){nwWrap=document.createElement('span');nwWrap.className='tw-nw';el.appendChild(nwWrap);} nwWrap.appendChild(s); }
+      else el.appendChild(s);
+      chars.push(s);
     }
-    function done(){el.innerHTML=full.slice(0,nw)+'<span style="white-space:nowrap">'+full.slice(nw)+'</span>';}
-    if(reduce){done();return;}
-    render(0);
-    setTimeout(()=>{let i=0;const iv=setInterval(()=>{i++;render(i);if(i>=full.length){clearInterval(iv);setTimeout(done,1600);}},62);},320);
+    if(reduce){chars.forEach(s=>s.classList.add('on'));return;}
+    let i=0;
+    function tick(){
+      chars[i].classList.add('on');
+      if(i>0)chars[i-1].classList.remove('cur');
+      chars[i].classList.add('cur');
+      i++;
+      if(i<chars.length){setTimeout(tick,62);}
+      else{setTimeout(()=>chars[chars.length-1].classList.remove('cur'),1400);}
+    }
+    setTimeout(tick,320);
   })();
 
   /* ===== ФИНАЛ: фон-код — цифры парят как снежинки ===== */
