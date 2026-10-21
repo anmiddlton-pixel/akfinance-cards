@@ -619,7 +619,7 @@ body.paused .chapter.active .reading-step{animation:none!important;opacity:1!imp
 <body>
 
 <div id="deck">
-  <canvas id="rain"></canvas>
+  
 
   <!-- 1 ИНТРО -->
   <section data-slide="1" class="chapter intro-chapter" data-d="5200">
@@ -909,14 +909,6 @@ body.paused .chapter.active .reading-step{animation:none!important;opacity:1!imp
   deck.addEventListener('touchcancel',()=>{swipeStart=null;},{passive:true});
   deck.addEventListener('click',e=>{if(performance.now()<ignoreTapUntil){e.preventDefault();return;}if(e.target.closest('a, button, #ui, #bars'))return;deck.classList.add('started');if(e.clientX<innerWidth*0.3)prev();else next();});
   addEventListener('keydown',e=>{if(e.target.closest('button,a')&&(e.key===' '||e.key==='Enter'))return;deck.classList.add('started');if(e.key==='ArrowRight'||e.key==='PageDown')next();else if(e.key==='ArrowLeft'||e.key==='PageUp')prev();else if(e.key===' '){e.preventDefault();togglePause();}else if(e.key==='Escape'){i=0;render();}});
-  (function(){
-    const c=document.getElementById('rain');if(!c)return;const g=c.getContext('2d');if(!g)return;let W,H,DPR,parts=[];
-    function mk(rand){return {x:Math.random()*W,y:rand?Math.random()*H:-20,vy:12+Math.random()*26,amp:10+Math.random()*28,freq:0.25+Math.random()*0.6,ph:Math.random()*6.28,sz:11+Math.random()*12,ch:Math.random()<0.5?'0':'1',a:0.14+Math.random()*0.34,fl:Math.random()*63|0};}
-    function size(){DPR=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;c.width=W*DPR;c.height=H*DPR;g.setTransform(DPR,0,0,DPR,0,0);const n=Math.round(W*H/11000);parts=[];for(let k=0;k<n;k++)parts.push(mk(true));}
-    size();addEventListener('resize',size);let last=0;
-    (function frame(ts){requestAnimationFrame(frame);const dt=last?Math.min(0.05,(ts-last)/1000):0.016;last=ts;if(paused||reduce)return;g.clearRect(0,0,W,H);g.textAlign='center';g.textBaseline='middle';
-      for(const p of parts){p.y+=p.vy*dt;if(p.y>H+22){p.y=-22;p.x=Math.random()*W;p.ch=Math.random()<0.5?'0':'1';}if(((p.fl++)&63)===0&&Math.random()<0.5)p.ch=p.ch==='0'?'1':'0';const dx=Math.sin(ts*0.001*p.freq+p.ph)*p.amp;g.font=p.sz.toFixed(1)+'px ui-monospace,"JetBrains Mono",monospace';g.fillStyle=(p.a>0.32?'rgba(130,225,210,':'rgba(70,155,148,')+p.a.toFixed(2)+')';g.fillText(p.ch,p.x+dx,p.y);}})(0);
-  })();
   /* ===== НИОКР: единый цикл — кольцо + комета (с сайта) ===== */
   (function(){
     const cyc=document.getElementById('cyc'); if(!cyc) return;
@@ -1307,7 +1299,7 @@ body.paused .chapter.active .reading-step{animation:none!important;opacity:1!imp
   const coarse=matchMedia('(pointer:coarse)');
   const stage=document.createElement('div');stage.id='guide-stage';
   document.body.appendChild(stage);
-  ['deck','rain','brand','bars'].forEach(id=>{const el=document.getElementById(id);if(el)stage.appendChild(el);});
+  ['deck','brand','bars'].forEach(id=>{const el=document.getElementById(id);if(el)stage.appendChild(el);});
   let raf=0;
   function fit(){
     const mobile=coarse.matches && Math.min(innerWidth,innerHeight)<=600;
