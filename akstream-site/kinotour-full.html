@@ -868,6 +868,10 @@ body.paused .chapter.active .reading-step{animation:none!important;opacity:1!imp
       }
       el.classList.add('reading-step');el.style.setProperty('--read-delay',delay.toFixed(2)+'s');
     });
+    if(c.classList.contains('intro-chapter')){
+      const lead=c.querySelector('.lead'),link=c.querySelector('.ch-link');
+      if(lead&&link)link.style.setProperty('--read-delay',lead.style.getPropertyValue('--read-delay'));
+    }
     c.dataset.d=Math.ceil(Math.max(6,cursor+2)*1000);
   });
   document.querySelectorAll('.stat .n').forEach(el=>{const node=el.firstChild;const end=Number(node.textContent.replace(/\s/g,''));el.dataset.end=end;});
