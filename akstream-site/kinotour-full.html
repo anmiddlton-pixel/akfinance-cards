@@ -881,7 +881,12 @@ body.paused .chapter.intro-chapter.active .intro-mark{animation:none!important;o
       const lead=c.querySelector('.lead'),link=c.querySelector('.ch-link');
       if(lead&&link)link.style.setProperty('--read-delay',lead.style.getPropertyValue('--read-delay'));
     }
-    c.dataset.d=Math.ceil(Math.max(6,cursor*pace+2)*1000);
+    // Hold the fully revealed slide for four seconds before advancing.
+    const revealEnd=Math.max(0,...steps.map(el=>{
+      const delay=parseFloat(el.style.getPropertyValue('--read-delay'))||0;
+      return delay+(el.querySelector('.stat .n')?Math.max(.3*pace,2.1):.3*pace);
+    }),c.classList.contains('intro-chapter')?2.5:0);
+    c.dataset.d=Math.ceil((revealEnd+4)*1000);
   });
   document.querySelectorAll('.stat .n').forEach(el=>{const node=el.firstChild;const end=Number(node.textContent.replace(/\s/g,''));el.dataset.end=end;});
   document.querySelectorAll('[data-to]').forEach(a=>{a.href=SITE+'#'+a.dataset.to;a.target='_blank';a.rel='noopener';});
