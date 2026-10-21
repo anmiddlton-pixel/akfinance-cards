@@ -609,7 +609,7 @@ body.mobile-guide #ui{top:var(--mobile-controls-top);bottom:auto;padding:3px 12p
 
 /* Reading pace: complete blocks appear slowly; manual pause exposes all text. */
 .chapter.active .wrap>*{animation:none!important;opacity:1;transform:none}
-.chapter.active .reading-step{animation:reading-reveal .3s ease-out both!important;animation-delay:var(--read-delay,0s)!important}
+.chapter.active .reading-step{animation:reading-reveal .26s ease-out both!important;animation-delay:var(--read-delay,0s)!important}
 @keyframes reading-reveal{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 body.paused .chapter.active .reading-step{animation:none!important;opacity:1!important;transform:none!important}
 @media(prefers-reduced-motion:reduce){.chapter.active .reading-step{animation:none!important;opacity:1;transform:none}}
@@ -864,14 +864,14 @@ body.paused .chapter.intro-chapter.active .intro-mark{animation:none!important;o
     const selector='.eyebrow,h2,.lead,.plain-intro,.flow,.simple-steps li,.competency-grid article,.credential-note,.stats,.chip,.path-step,.domain-footer,.pilot-signature,.proof-summary,.proof-work,.proof-side,.product-module,.service-tile,.research-focus,.research-result,.final-partnership,.final-contact-strip,.ch-link';
     const candidates=[...c.querySelector('.wrap').querySelectorAll(selector)];
     const steps=candidates.filter(el=>!candidates.some(parent=>parent!==el&&parent.contains(el)));
-    let cursor=.35;
+    let cursor=.3;
     steps.forEach(el=>{
       let delay=cursor;
       if(el.matches('.eyebrow'))delay=0;
-      else if(el.matches('h2'))delay=.08;
+      else if(el.matches('h2'))delay=.07;
       else {
         const words=el.textContent.trim().split(/\s+/).filter(Boolean).length;
-        cursor+=Math.max(.55,Math.min(2.5,words/12.4+.275));
+        cursor+=Math.max(.48,Math.min(2.2,words/14.3+.24));
       }
       el.classList.add('reading-step');el.style.setProperty('--read-delay',delay.toFixed(2)+'s');
     });
@@ -946,7 +946,7 @@ body.paused .chapter.intro-chapter.active .intro-mark{animation:none!important;o
   function animate(now){
     const dt=previous?Math.min(now-previous,100):0;previous=now;
     if(!paused)elapsed+=dt;
-    chapters[i].querySelectorAll('.stat .n').forEach(el=>{const reveal=el.closest('.reading-step');const delay=parseFloat(reveal?.style.getPropertyValue('--read-delay')||'0')*1000;const progress=(reduce||paused)?1:Math.max(0,Math.min((elapsed-delay)/2100,1));el.firstChild.textContent=Math.round(Number(el.dataset.end)*(1-Math.pow(1-progress,3))).toLocaleString('ru-RU');});
+    chapters[i].querySelectorAll('.stat .n').forEach(el=>{const reveal=el.closest('.reading-step');const delay=parseFloat(reveal?.style.getPropertyValue('--read-delay')||'0')*1000;const progress=(reduce||paused)?1:Math.max(0,Math.min((elapsed-delay)/1850,1));el.firstChild.textContent=Math.round(Number(el.dataset.end)*(1-Math.pow(1-progress,3))).toLocaleString('ru-RU');});
     requestAnimationFrame(animate);
   }
   render();setPP();requestAnimationFrame(animate);
